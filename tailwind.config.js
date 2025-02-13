@@ -7,7 +7,7 @@ module.exports = {
   prefix: "",
   
   content: [
-    './src/**/*.{ts,tsx,vue,html}',
+    './src/**/*.{ts,tsx,vue,html,js}',
 	],
   
   theme: {
@@ -72,6 +72,8 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: '#16A34A',
+        danger: '#DC2626'
       },
       borderRadius: {
       	xl: "calc(var(--radius) + 4px)",

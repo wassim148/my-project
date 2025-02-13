@@ -3,6 +3,7 @@ import { router } from '@routers'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
+// import 'shoelace-style/dist/shoelace.css';
 
 function initApp(App: any) {
     // create helper

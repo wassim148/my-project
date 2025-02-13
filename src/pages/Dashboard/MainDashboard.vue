@@ -8,7 +8,10 @@ import { DASHBOARD_SIDEBAR_LINKS } from '@constants'
 import useUserDropdownMenue from '@/core/composable/useUserdropdownMenue'
 import { useDashboardStore } from '@/core/stores/dashboard.store'
 import { cn } from '@/shared/lib/utils'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const dashboardStore = useDashboardStore()
 const userDropdownMenue = useUserDropdownMenue(
     // user data
@@ -17,10 +20,11 @@ const userDropdownMenue = useUserDropdownMenue(
     },
     // logout function
     () => {
-        console.log('logout')
+        localStorage.removeItem('token')
+        router.push('/sign-in')
     },
 )
-const notifications: NotificationSideBarProps['notification'] = [
+const notifications: NotificationSideBarProps['notification'] = ref([
     {
         message: 'Order number 1503 arrived',
         time: '3 minute ago',
@@ -36,8 +40,8 @@ const notifications: NotificationSideBarProps['notification'] = [
         time: '1 week ago',
         variant: 'danger',
     },
-]
-const demands: NotificationSideBarProps['demands'] = [
+])
+const demands: NotificationSideBarProps['demands'] = ref([
     {
         username: 'Tom freak',
         message: 'Machine #CRP5 has broken gear',
@@ -53,7 +57,7 @@ const demands: NotificationSideBarProps['demands'] = [
         message: 'Machine #CRP56 has broken gear',
         time: '1 week ago',
     },
-]
+])
 </script>
 <template>
     <div class="relative flex h-screen bg-background">
@@ -84,3 +88,4 @@ const demands: NotificationSideBarProps['demands'] = [
         />
     </div>
 </template>
+

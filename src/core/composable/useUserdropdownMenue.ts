@@ -12,7 +12,7 @@ const useUserDropdownMenue = (user: UserDropdownBtnProps['user'], logout: () => 
                     action: 'link',
                     label: 'Profile',
                     icon: 'ph:user-duotone',
-                    to: '/',
+                    to: '/profile',
                 },
                 {
                     type: 'menue-item',
@@ -27,6 +27,13 @@ const useUserDropdownMenue = (user: UserDropdownBtnProps['user'], logout: () => 
                     label: 'Payment',
                     icon: 'ph:money-wavy-duotone',
                     to: '/',
+                },
+                {
+                    type: 'menue-item',
+                    action: 'link',
+                    label: 'Settings',
+                    icon: 'ph:gears-duotone',
+                    to: '/Settings',
                 },
             ],
         },
