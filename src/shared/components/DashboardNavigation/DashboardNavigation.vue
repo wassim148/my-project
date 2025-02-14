@@ -43,7 +43,7 @@ const isRightSidebarCollapsed = defineModel('isRightSidebarCollapsed', { require
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Default</BreadcrumbPage>
+                        <BreadcrumbPage>{{ $route.name }}</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>

@@ -14,7 +14,7 @@
   
   <script>
   export default {
-    name: 'CalendrierInteractif',
+    name: 'Calendrier Interactif',
     data() {
       return {
         selectedDate: new Date(),

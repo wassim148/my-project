@@ -43,7 +43,7 @@ export default {
   methods: {
     async LeaveRequests() {
       try {
-        const response = await axios.get('/admin/leave-requests');
+        const response = await axios.get('/conges');
         this.leaveRequests = response.data;
       } catch (error) {
         console.error('Error fetching leave requests:', error);
@@ -51,7 +51,7 @@ export default {
     },
     async approveRequest(id) {
       try {
-        await axios.put(`/admin/approve/${id}`);
+        await axios.put(`/conges/valider/${id}`);
         this.LeaveRequests();
       } catch (error) {
         console.error('Error approving request:', error);
@@ -59,7 +59,7 @@ export default {
     },
     async rejectRequest(id) {
       try {
-        await axios.put(`/admin/reject/${id}`);
+        await axios.put(`/admin/valider/${id}`);
         this.LeaveRequests();
       } catch (error) {
         console.error('Error rejecting request:', error);

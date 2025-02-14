@@ -5,11 +5,11 @@ import { ROUTES, DASHBOARD_ROUTES } from '@constants'
 export const router = createRouter({
     history: createMemoryHistory(),
     routes: [
-        // {
-        //     path: '/Settings',
-        //     name: 'Settings',
-        //     component: () => import('@/pages/Dashboard/Settings/Settings.vue')
-        // },
+        {
+            path: '/Settings',
+            name: 'Settings',
+            component: () => import('@/pages/Dashboard/Settings/Settings.vue')
+        },
         // {
         //     ...ROUTES.HOME,
         //     redirect: ROUTES.SIGN_IN.path,

@@ -29,7 +29,7 @@
   
   <script>
   export default {
-    name: 'TableauSuivi',
+    name: 'Tableau Suivi',
     data() {
       return {
         requests: [

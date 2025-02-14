@@ -3,7 +3,7 @@ import Button from '@components/ui/button/Button.vue'
 import { useField, useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-// import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form'
 import Input from '@/shared/components/ui/input/Input.vue'
 import { ref } from 'vue'
 import { vAutoAnimate } from '@formkit/auto-animate/vue'
@@ -109,7 +109,7 @@ const step = ref<number>(1)
                                 <Label for="remember-me" class="text-xs font-normal">Remember me</Label>
                             </div>
                             <div>
-                                <RouterLink to="/signup" class="text-xs text-primary hover:text-primary/60">
+                                <RouterLink to="/sign-up" class="text-xs text-primary hover:text-primary/60">
                                     Forgot password?
                                 </RouterLink>
                             </div>

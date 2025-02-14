@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import NotificationItem from '@components/NotificationSideBar/NotificationItem/NotificationItem.vue'
+import NotificationItem from '@/shared/components/NotificationSideBar/NotificationItem/NotificationItem.vue'
 
 export interface SideBarProps {
     isSidebarCollapsed: boolean
