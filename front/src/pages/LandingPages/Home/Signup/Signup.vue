@@ -1,191 +1,197 @@
 <template>
-    <div class="registration-form">
-        <h2 class="text-2xl font-bold text-center mb-4">Registration Form</h2>
-        <form @submit.prevent="submitForm" class="space-y-4">
-            <div :class="cn('space-y-4', step > 1 && 'hidden')" v-auto-animate>
-                <div>
-                    <label for="profile-picture" class="block text-sm font-medium text-gray-700">Browse Photo</label>
-                    <div class="flex items-center mt-1">
-                        <input type="file" id="profile-picture" accept="image/*" @change="handleFileUpload"
-                            class="hidden" />
-                        <label for="profile-picture"
-                            class="cursor-pointer bg-gray-200 text-gray-700 py-2 px-4 rounded-md border border-gray-300 hover:bg-gray-300 transition duration-300">
-                            Click to add profile picture
-                        </label>
-                    </div>
-                    <img v-if="profilePicturePreview" :src="profilePicturePreview" alt="Profile Picture Preview"
-                        class="mt-2 w-20 h-20 rounded-full object-cover mx-auto border-2 border-gray-300" />
-                </div>
-                <!-- Firstname -->
-                <div>
-                    <label for="firstname" class="block text-sm font-medium text-gray-700">Firstname</label>
-                    <input type="text" id="firstname" v-model="firstname"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required />
-                </div>
+  <div class="flex col-span-3 md:col-span-1 flex-col px-12 py-12 w-full h-full bg-background font-['Inter']">
+    <div class="flex flex-col space-y-12">
+      <!-- Header -->
+      <div class="text-foreground hover:!text-primary w-fit cursor-pointer h-full flex flex-row space-x-2 items-center">
+        <RouterLink to="/">
+          <div class="border rounded-sm shadow-sm p-2 bg-background">
+            <Icon icon="ant-design:thunderbolt-filled" class="text-inherit h-4 w-4"></Icon>
+          </div>
+        </RouterLink>
+        <span class="text-sm tracking-wider text-inherit uppercase font-semibold flex items-center">Factory Bliz</span>
+      </div>
 
-                <!-- Email -->
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="email" v-model="email"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required />
-                </div>
-                <Button class="w-full" @click="async () => {
-                        const validation = await form.validate({ mode: 'silent' })
-                        if ('code' in validation.errors) {
-                            form.validateField('code')
-                            return
-                        }
-                        step++
-                    }
-                    " type="button">
-                    Next
-                </Button>
-            </div>
-
-
-
-            <!-- Password -->
+      <!-- Main Content -->
+      <main class="flex flex-col space-y-6">
+        <h1 class="font-semibold text-lg">Create Your Account</h1>
+        <form class="text-base" @submit.prevent="onSubmit">
+          <!-- Step 1: Profile Information -->
+          <div :class="cn('space-y-4', step > 1 && 'hidden')" v-auto-animate>
             <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Set up password</label>
-                <input type="password" id="password" v-model="password" @input="validatePassword"
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    required />
-                <p class="mt-2 text-sm text-gray-500">
-                    Please create a secure password including the following criteria:
-                </p>
-                <ul class="list-disc pl-5 text-sm text-gray-600">
-                    <li>Lowercase letters</li>
-                    <li>Numbers</li>
-                    <li>Capital letters</li>
-                    <li>Special characters</li>
-                </ul>
-                <p v-if="passwordStrengthFeedback" class="mt-2 text-sm text-red-500">
-                    {{ passwordStrengthFeedback }}
-                </p>
+              <label for="profile-picture" class="block text-sm font-medium text-gray-700">Browse Photo</label>
+              <div class="flex items-center mt-1">
+                <input type="file" id="profile-picture" accept="image/*" @change="handleFileUpload" class="hidden" />
+                <label for="profile-picture"
+                  class="cursor-pointer bg-gray-200 text-gray-700 py-2 px-4 rounded-md border border-gray-300 hover:bg-gray-300 transition duration-300">
+                  Click to add profile picture
+                </label>
+              </div>
+              <img v-if="profilePicturePreview" :src="profilePicturePreview" alt="Profile Picture Preview"
+                class="mt-2 w-20 h-20 rounded-full object-cover mx-auto border-2 border-gray-300" />
             </div>
+            <FormField name="firstname" v-slot="{ field, errorMessage }">
+              <FormItem>
+                <FormLabel>Firstname</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="username" v-bind="field" />
+                </FormControl>
+                <FormMessage>{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
+            <FormField name="email" v-slot="{ field, errorMessage }">
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="example@example.com" v-bind="field" />
+                </FormControl>
+                <FormMessage>{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
+            <Button class="w-full" @click="nextStep" type="button">Next</Button>
+          </div>
 
-            <!-- Profile Picture -->
-
-            <!-- Gender -->
+          <!-- Step 2: Password and Additional Details -->
+          <div :class="cn('space-y-4', step <= 1 && 'hidden')" v-auto-animate>
+            <FormField name="password" v-slot="{ field, errorMessage }">
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" placeholder="******" v-bind="field" />
+                </FormControl>
+                <FormMessage>{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
             <div>
-                <label class="block text-sm font-medium text-gray-700">Gender</label>
-                <div class="mt-2 space-y-2">
-                    <div class="flex items-center">
-                        <input type="radio" id="male" name="gender" value="Male" v-model="gender"
-                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" />
-                        <label for="male" class="ml-3 block text-sm font-medium text-gray-700">Male</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="female" name="gender" value="Female" v-model="gender"
-                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" />
-                        <label for="female" class="ml-3 block text-sm font-medium text-gray-700">Female</label>
-                    </div>
-                </div>
+              <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+              <select id="role" v-model="role" required
+                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <option value="Admin">Admin</option>
+                <option value="Employee">Employee</option>
+              </select>
             </div>
-
-            <!-- Profession -->
-            <div>
-                <label for="profession" class="block text-sm font-medium text-gray-700">Profession</label>
-                <input type="text" id="profession" v-model="profession"
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+            <FormField name="profession" v-slot="{ field, errorMessage }">
+              <FormItem>
+                <FormLabel>Profession</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="Software Engineer" v-bind="field" />
+                </FormControl>
+                <FormMessage>{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
+            <FormField name="cin" v-slot="{ field, errorMessage }">
+              <FormItem>
+                <FormLabel>CIN (National Identity Card Number)</FormLabel>
+                <FormControl>
+                  <Input type="text" placeholder="12345678" v-bind="field" />
+                </FormControl>
+                <FormMessage>{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
+            <div class="w-full py-4 justify-center flex space-x-4">
+              <Button variant="secondary" class="w-full" @click="step--" type="button">Back</Button>
+              <Button type="submit" class="w-full">Sign Up</Button>
             </div>
-
-            <button type="submit"
-                class="w-full bg-green-500 text-white font-medium py-2 px-4 rounded-md mt-6 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-                Complete
-            </button>
+          </div>
         </form>
+        <Separator />
+        <span class="text-xs">
+          Already have an account?
+          <RouterLink to="/sign-in" class="text-primary hover:text-primary/60">Sign in now</RouterLink>
+        </span>
+      </main>
     </div>
+    <div class="flex-grow"></div>
+    <div class="flex justify-between items-center w-full">
+      <RouterLink to="/" class="flex space-x-1 items-center text-xs my-auto">
+        <img class="h-4 w-5" src="@/assets/img/DATIUM-02.png" />
+        <span>Datuim-sass</span>
+      </RouterLink>
+      <span class="text-xs">© Datuim-sass 2021</span>
+    </div>
+  </div>
 </template>
 
-<script>
+<script lang="ts" setup>
+import Button from '@components/ui/button/Button.vue'
+import { useField, useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form'
+import Input from '@/shared/components/ui/input/Input.vue'
 import { ref } from 'vue'
+import { vAutoAnimate } from '@formkit/auto-animate/vue'
+import { cn } from '@/shared/lib/utils'
+import Switch from '@/shared/components/ui/switch/Switch.vue'
+import Label from '@/shared/components/ui/label/Label.vue'
+import Separator from '@/shared/components/ui/separator/Separator.vue'
+import { Icon } from '@iconify/vue'
 import axios from 'axios'
 
-export default {
-    data() {
-        return {
-            firstname: '',
-            email: '',
-            password: '',
-            passwordStrengthFeedback: '',
-            profilePicturePreview: null,
-            gender: 'Male',
-            profession: '',
-            error: '',
-            message: '',
-        }
-    },
-    methods: {
-        validatePassword() {
-            const hasLowercase = /[a-z]/.test(this.password)
-            const hasUppercase = /[A-Z]/.test(this.password)
-            const hasNumbers = /\d/.test(this.password)
-            const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(this.password)
+const formSchema = toTypedSchema(
+  z.object({
+    firstname: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
+    email: z.string().email({ message: 'Invalid email address!' }),
+    password: z.string()
+      .min(8, { message: 'Password is too short' })
+      .max(20, { message: 'Password is too long' }),
+    profession: z.string().min(3, { message: 'Profession must be at least 3 characters.' }),
+    cin: z.string().min(8, { message: 'CIN must be at least 9 digits.' }).regex(/^\d+$/, {
+      message: 'CIN must only contain numbers.',
+    }),
+  }),
+)
 
-            let feedback = []
+const { handleSubmit, values, errors } = useForm({
+  validationSchema: formSchema,
+})
 
-            if (!hasLowercase) feedback.push('Include lowercase letters')
-            if (!hasUppercase) feedback.push('Include capital letters')
-            if (!hasNumbers) feedback.push('Include numbers')
-            if (!hasSpecialChars) feedback.push('Include special characters')
+const onSubmit = handleSubmit(async (values) => {
+  try {
+    const response = await axios.post('/auth/signup', { ...values, role: role.value }, {
+      headers: { 'X-localization': localStorage.getItem('lan') },
+    })
+    if (response.status === 201) {
+      console.log(response.data)
+      alert('Account created successfully!')
+      window.location.href = '/sign-in'
+    } else {
+      throw new Error('Failed to create account.')
+    }
+  } catch (error) {
+    console.error(error)
+    alert('An error occurred while creating your account.')
+  }
+})
 
-            this.passwordStrengthFeedback = feedback.length > 0 ? feedback.join(', ') : ''
-        },
-        handleFileUpload(event) {
-            const file = event.target.files[0]
-            if (file) {
-                const reader = new FileReader()
-                reader.onload = (e) => {
-                    this.profilePicturePreview = e.target.result
-                }
-                reader.readAsDataURL(file)
-            }
-        },
-        async submitForm() {
-            if (this.passwordStrengthFeedback) {
-                alert('Please ensure your password meets all criteria.')
-                return
-            }
-
-            const formData = {
-                firstname: this.firstname,
-                email: this.email,
-                password: this.password,
-                gender: this.gender,
-                profession: this.profession,
-                profilePicture: this.profilePicturePreview,
-            }
-
-            try {
-                const response = await axios.post('/auth/Signup', formData, {
-                    headers: { 'X-localization': localStorage.getItem('lan') },
-                })
-                this.message = response.data.message
-                this.$router.push('/sign-in')
-            } catch (error) {
-                this.error =
-                    error.response && error.response.data
-                        ? `Error occurred: ${error.response.data.message}`
-                        : `Error occurred: ${error.message}`
-                console.log('catch', error)
-            }
-        },
-    },
-}
 const step = ref<number>(1)
+const nextStep = async () => {
+  const validation = await handleSubmit()
+  if (!Object.keys(errors.value).length) {
+    step.value++
+  }
+}
 
+const profilePicturePreview = ref<string | null>(null)
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files && target.files[0]) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      profilePicturePreview.value = e.target?.result as string
+    }
+    reader.readAsDataURL(target.files[0])
+  }
+}
+
+const role = ref<string>('Employee')
 </script>
 
 <style scoped>
-.registration-form {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.trapez {
+  transform: skewX(-20deg);
+}
+.trapez-content {
+  transform: skewX(20deg);
 }
 </style>
+
