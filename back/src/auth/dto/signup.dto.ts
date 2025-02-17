@@ -20,4 +20,10 @@ export class SignupDto {
   @IsNotEmpty()
   @IsString()
   role: string;
+
+  @IsNotEmpty()
+  @IsString()
+  profession: string;
+
+  photo?: string;
 }

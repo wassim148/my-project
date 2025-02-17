@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto px-4 py-8">
+      <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-center mb-6">Gestion des congés</h1>
 
         <form @submit.prevent="envoyerDemande" class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto mb-8">
@@ -57,7 +57,7 @@
         <h2 class="text-2xl font-semibold text-center mb-6">Mes demandes de congé</h2>
         <ul class="space-y-4">
             <li
-                v-for="conge in conges"
+                v-for="conge in congeStore"
                 :key="conge.id"
                 class="p-4 bg-white rounded-lg shadow-md flex justify-between items-center"
             >
@@ -73,67 +73,38 @@
                 </span>
             </li>
         </ul>
+        <button @click="fetchConges">Rafraîchir</button>
     </div>
-</template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import Error from '@/shared/components/error/Error.vue'
-
-interface Conge {
-    id: number
-    typeConge: string
-    dateDebut: string
-    dateFin: string
-    statut: string
-}
-
-const demande = ref<Conge>({
-    numCIN: null,
-    typeConge: '',
-    dateDebut: '',
-    dateFin: '',
-    reason: '',
-    statut: 'en attente'
-})
-
-const conges = ref<Conge[]>([])
-
-const fetchConges = async () => {
-    try {
-        const response = await axios.get('/api/conges',demande.value)
-        conges.value = response.data
-    } catch (error) {
-        return {
-            error: true,
-            message: error.response.data.message
-        }
-    }
-}
-
-const envoyerDemande = async () => {
-    try {
-        const response = await axios.post('api/conges/creer', demande.value)
-        conges.value.push(response.data)
-        demande.value = {
-            numCIN: null,
-            typeConge: '',
-            dateDebut: '',
-            dateFin: '',
-            reason: '',
-            statut: 'en attente'
-        }
-        return response.data
-    } catch (error) {
-        console.error('Erreur lors de l envoi de la demande de congé:', error)
-        return {
-            error: true,
-            message: error.response.data.message
-        }
-    }
-}
-
-onMounted(fetchConges)
-</script>
-
+  </template>
+  
+  <script setup lang="ts">
+  import { reactive, onMounted } from 'vue';
+  import { useCongeStore } from '@/core/stores/conge.store';
+  
+  const congeStore = useCongeStore();
+  
+  const demande = reactive({
+      numCIN: '',
+      typeConge: '',
+      dateDebut: '',
+      dateFin: '',
+      reason: '',
+  });
+  
+  const envoyerDemande = async () => {
+      await congeStore.createConge(demande);
+      demande.numCIN = '';
+      demande.typeConge = '';
+      demande.dateDebut = '';
+      demande.dateFin = '';
+      demande.reason = '';
+  };
+  
+  onMounted(() => {
+    congeStore.fetchConges();
+  });
+  
+  const fetchConges = () => {
+    congeStore.fetchConges();
+  };
+  </script>

@@ -30,7 +30,7 @@ export class Conge {
 
   @Column({
     type: 'enum',
-    enum: ['waiting', 'accepted', 'refused', 'approuvé'],
+    enum: ['waiting', 'accepted', 'refused'],
     default: 'waiting',
   })
   status: 'waiting' | 'accepted' | 'refused';
@@ -42,7 +42,7 @@ export class Conge {
   updatedAt: Date;
 
   @Column()
-  descreption: string;
+  raison: string;
 
   @Column()
   dateHeure: string;

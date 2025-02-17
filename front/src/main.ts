@@ -3,7 +3,8 @@ import { router } from '@routers'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
-// import 'shoelace-style/dist/shoelace.css';
+import { axiosHelper } from './core/helpers'
+
 
 function initApp(App: any) {
     // create helper
@@ -14,6 +15,8 @@ function initApp(App: any) {
     // inject helper
     app.use(router)
     app.use(pinia)
+    app.use(axiosHelper)
+
 
     return app
 }

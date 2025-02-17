@@ -16,35 +16,32 @@
             <td class="p-2">{{ request.employee }}</td>
             <td class="p-2">{{ request.type }}</td>
             <td class="p-2">{{ request.period }}</td>
-            <td class="p-2">{{ request.status }}</td>
+            <td class="p-2" :class="request.status === 'Approuvé' ? 'text-green-500' : 'text-red-500'">{{ request.status }}</td>
             <td class="p-2">
-              <sl-button variant="success" @click="approve(request)">Approuver</sl-button>
-              <sl-button variant="danger" @click="reject(request)">Rejeter</sl-button>
+              <sl-button variant="success" @click="approve(request.id)">Approuver</sl-button>
+              <sl-button variant="danger" @click="reject(request.id)">Rejeter</sl-button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
   </template>
-  
-  <script>
-  export default {
-    name: 'Tableau Suivi',
-    data() {
-      return {
-        requests: [
-          { employee: 'John Doe', type: 'Annuel', period: '15/10/2023 - 20/10/2023', status: 'En attente' },
-          { employee: 'Jane Smith', type: 'Maladie', period: '20/10/2023 - 22/10/2023', status: 'Approuvé' }
-        ]
-      };
-    },
-    methods: {
-      approve(request) {
-        request.status = 'Approuvé';
-      },
-      reject(request) {
-        request.status = 'Rejeté';
-      }
-    }
-  };
+
+  <script setup lang="ts">
+import { onMounted } from 'vue';
+import { useLeaveRequestStore } from '@/core/stores/leaveRequest.store';
+
+const leaveRequestStore = useLeaveRequestStore();
+
+onMounted(() => {
+  leaveRequestStore.fetchLeaveRequests();
+});
+
+const approve = (id: number) => {
+  leaveRequestStore.approve(id);
+};
+const reject = (id: number) => {
+  leaveRequestStore.reject(id);
+};
   </script>
+

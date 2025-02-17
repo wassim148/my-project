@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateCongéeDto {
-  @IsNotEmpty()
-  @IsString()
-  username: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // username: string;
 
   @IsNotEmpty()
   @IsString()
@@ -21,11 +21,11 @@ export class CreateCongéeDto {
   @IsString()
   typeConge: string;
 
-  @IsNotEmpty()
-  @IsString()
-  statut: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // statut: string;
 
   @IsNotEmpty()
   @IsString()
-  descreption: string;
+  raison: string;
 }

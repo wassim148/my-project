@@ -46,6 +46,7 @@ export class AuthService {
       numcin: signupData.numcin,
       email: signupData.email,
       password: hashedPassword,
+      profession: signupData.profession,
       role: Role[signupData.role],
       token: await this.jwtService.sign(
         { username: signupData.username, email: signupData.email },
@@ -108,10 +109,7 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-
-    // const tokens = await this.getToken(user.id, user.email);
     delete user.password;
-
     const token = await this.getToken(user.id, user.email);
     return { user, token: token.access_token };
   }
@@ -120,7 +118,6 @@ export class AuthService {
     const user = await this.usersRepository.findOne({ where: { email } });
 
     await this.mailerService.sendVerificationEmail(user.email, token);
-
     try {
       const resp = this.jwtService.verify(token);
 
@@ -172,12 +169,9 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 24);
-
     await this.mailerService.sendPasswordResetEmail(user.email, token);
-
     await this.jwtService.signAsync(
       { id: user.id, email },
       { expiresIn: '1h' },
@@ -186,7 +180,6 @@ export class AuthService {
       { id: user.id },
       {
         token,
-        // expiryDate
       },
     );
   }

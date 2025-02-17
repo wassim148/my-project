@@ -10,21 +10,21 @@ export const router = createRouter({
             name: 'Settings',
             component: () => import('@/pages/Dashboard/Settings/Settings.vue')
         },
-        // {
-        //     ...ROUTES.HOME,
-        //     redirect: ROUTES.SIGN_IN.path,
-        //     component: () => import('@pages/LandingPages/Home/Home.vue'),
-        //     children: [
-        //         {
-        //             ...ROUTES.SIGN_UP,
-        //             component: () => import('@pages/LandingPages/Home/Signup/Signup.vue'),
-        //         },
-        //         {
-        //             ...ROUTES.SIGN_IN,
-        //             component: () => import('@pages/LandingPages/Home/Login/Login.vue'),
-        //         },
-        //     ],
-        // },
+        {
+            ...ROUTES.HOME,
+            redirect: ROUTES.SIGN_IN.path,
+            component: () => import('@pages/LandingPages/Home/Home.vue'),
+            children: [
+                {
+                    ...ROUTES.SIGN_UP,
+                    component: () => import('@pages/LandingPages/Home/Signup/Signup.vue'),
+                },
+                {
+                    ...ROUTES.SIGN_IN,
+                    component: () => import('@pages/LandingPages/Home/Login/Login.vue'),
+                },
+            ],
+        },
         {
             ...ROUTES.MAIN,
             component: () => import('@pages/Dashboard/MainDashboard.vue'),

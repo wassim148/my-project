@@ -49,6 +49,9 @@ export class User {
   @Column({ nullable: true })
   isAvailable: boolean;
 
+  @Column({ nullable: true })
+  profession: string;
+
   @OneToMany(() => Notification, (notifications) => notifications.user, {
     eager: true,
   })

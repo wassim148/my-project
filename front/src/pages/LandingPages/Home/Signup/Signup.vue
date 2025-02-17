@@ -1,7 +1,6 @@
 <template>
   <div class="flex col-span-3 md:col-span-1 flex-col px-12 py-12 w-full h-full bg-background font-['Inter']">
     <div class="flex flex-col space-y-12">
-      <!-- Header -->
       <div class="text-foreground hover:!text-primary w-fit cursor-pointer h-full flex flex-row space-x-2 items-center">
         <RouterLink to="/">
           <div class="border rounded-sm shadow-sm p-2 bg-background">
@@ -10,12 +9,9 @@
         </RouterLink>
         <span class="text-sm tracking-wider text-inherit uppercase font-semibold flex items-center">Factory Bliz</span>
       </div>
-
-      <!-- Main Content -->
       <main class="flex flex-col space-y-6">
         <h1 class="font-semibold text-lg">Create Your Account</h1>
         <form class="text-base" @submit.prevent="onSubmit">
-          <!-- Step 1: Profile Information -->
           <div :class="cn('space-y-4', step > 1 && 'hidden')" v-auto-animate>
             <div>
               <label for="profile-picture" class="block text-sm font-medium text-gray-700">Browse Photo</label>
@@ -49,8 +45,6 @@
             </FormField>
             <Button class="w-full" @click="nextStep" type="button">Next</Button>
           </div>
-
-          <!-- Step 2: Password and Additional Details -->
           <div :class="cn('space-y-4', step <= 1 && 'hidden')" v-auto-animate>
             <FormField name="password" v-slot="{ field, errorMessage }">
               <FormItem>
@@ -112,20 +106,17 @@
 </template>
 
 <script lang="ts" setup>
-import Button from '@components/ui/button/Button.vue'
-import { useField, useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form'
-import Input from '@/shared/components/ui/input/Input.vue'
-import { ref } from 'vue'
-import { vAutoAnimate } from '@formkit/auto-animate/vue'
-import { cn } from '@/shared/lib/utils'
-import Switch from '@/shared/components/ui/switch/Switch.vue'
-import Label from '@/shared/components/ui/label/Label.vue'
-import Separator from '@/shared/components/ui/separator/Separator.vue'
-import { Icon } from '@iconify/vue'
-import axios from 'axios'
+import { useField, useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import * as z from 'zod';
+import { ref } from 'vue';
+import { cn } from '@/shared/lib/utils';
+import { useUserStore } from '@/core/stores/user.store';
+import Button from '@components/ui/button/Button.vue';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
+import Input from '@/shared/components/ui/input/Input.vue';
+import Separator from '@/shared/components/ui/separator/Separator.vue';
+import { Icon } from '@iconify/vue';
 
 const formSchema = toTypedSchema(
   z.object({
@@ -139,51 +130,46 @@ const formSchema = toTypedSchema(
       message: 'CIN must only contain numbers.',
     }),
   }),
-)
+);
 
 const { handleSubmit, values, errors } = useForm({
   validationSchema: formSchema,
-})
+});
+
+const userStore = useUserStore();
 
 const onSubmit = handleSubmit(async (values) => {
   try {
-    const response = await axios.post('/auth/signup', { ...values, role: role.value }, {
-      headers: { 'X-localization': localStorage.getItem('lan') },
-    })
-    if (response.status === 201) {
-      console.log(response.data)
-      alert('Account created successfully!')
-      window.location.href = '/sign-in'
-    } else {
-      throw new Error('Failed to create account.')
-    }
+    await userStore.signup({ ...values, role: role.value });
+    alert('Account created successfully!');
+    window.location.href = '/sign-in';
   } catch (error) {
-    console.error(error)
-    alert('An error occurred while creating your account.')
+    console.error(error);
+    alert('An error occurred while creating your account.');
   }
-})
+});
 
-const step = ref<number>(1)
+const step = ref<number>(1);
 const nextStep = async () => {
-  const validation = await handleSubmit()
+  const validation = await handleSubmit();
   if (!Object.keys(errors.value).length) {
-    step.value++
+    step.value++;
   }
-}
+};
 
-const profilePicturePreview = ref<string | null>(null)
+const profilePicturePreview = ref<string | null>(null);
 const handleFileUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
+  const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (e) => {
-      profilePicturePreview.value = e.target?.result as string
-    }
-    reader.readAsDataURL(target.files[0])
+      profilePicturePreview.value = e.target?.result as string;
+    };
+    reader.readAsDataURL(target.files[0]);
   }
-}
+};
 
-const role = ref<string>('Employee')
+const role = ref<string>('Employee');
 </script>
 
 <style scoped>
@@ -194,4 +180,3 @@ const role = ref<string>('Employee')
   transform: skewX(20deg);
 }
 </style>
-
