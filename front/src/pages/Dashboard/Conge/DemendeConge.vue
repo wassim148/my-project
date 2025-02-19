@@ -93,6 +93,7 @@
   
   const envoyerDemande = async () => {
       await congeStore.createConge(demande);
+      console.log( demande);
       demande.numCIN = '';
       demande.typeConge = '';
       demande.dateDebut = '';

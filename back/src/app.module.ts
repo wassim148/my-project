@@ -12,6 +12,8 @@ import { JwtStrategy } from './auth/strategy/jwt.strategy';
 import { CongéeModule } from './congée/congée.module';
 import { NotificationModule } from './notification/notification.module';
 import { PointageModule } from './pointage/pointage.module';
+import { EventModule } from './event/event.module';
+import { LeaveRequestModule } from './leave-request/leave-request.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { PointageModule } from './pointage/pointage.module';
     CongéeModule,
     NotificationModule,
     PointageModule,
+    EventModule,
+    LeaveRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, WebsocketsModule],

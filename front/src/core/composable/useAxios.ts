@@ -2,7 +2,7 @@ import { useCookies } from 'vue3-cookies'
 import { useRouter } from 'vue-router'
 import { env } from '@constants'
 import { useToast } from '@components/ui/toast'
-import { h } from 'vue'
+import { h, inject } from 'vue'
 import { AxiosError } from 'axios'
 
 type ErrorMessageFormat = {
@@ -14,6 +14,7 @@ type ErrorMessageFormat = {
 export default function useAxios(axios: any) {
     const { cookies } = useCookies()
     const router = useRouter()
+    const token = cookies.get(env.TOKEN_KEY.toString())
     const { toast } = useToast()
 
     axios.interceptors.request.use((request: any) => {

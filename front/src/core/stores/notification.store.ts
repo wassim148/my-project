@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { useToast } from 'vue-toastification'
 import axios from 'axios';
 import { env } from '../constants';
 

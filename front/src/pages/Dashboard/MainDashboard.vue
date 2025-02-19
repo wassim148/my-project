@@ -1,90 +1,80 @@
 <script lang="ts" setup>
-import DashboardNavigation from '@/shared/components/DashboardNavigation/DashboardNavigation.vue'
-import SideBar from '@/shared/components/SideBar/SideBar.vue'
+import DashboardNavigation from '@/shared/components/DashboardNavigation/DashboardNavigation.vue';
+import SideBar from '@/shared/components/SideBar/SideBar.vue';
 import NotificationSideBar, {
     type SideBarProps as NotificationSideBarProps,
-} from '@/shared/components/NotificationSideBar/NotificationSideBar.vue'
-import { DASHBOARD_SIDEBAR_LINKS } from '@constants'
-import useUserDropdownMenue from '@/core/composable/useUserdropdownMenue'
-import { useDashboardStore } from '@/core/stores/dashboard.store'
-import { cn } from '@/shared/lib/utils'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+} from '@/shared/components/NotificationSideBar/NotificationSideBar.vue';
+import { DASHBOARD_SIDEBAR_LINKS } from '@constants';
+import { useUserStore } from '@/core/stores/user.store';
+import { useNotificationStore } from '@/core/stores/notification.store';
+import { cn } from '@/shared/lib/utils';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import useUserDropdownMenue from '@/core/composable/useUserdropdownMenue';
+const router = useRouter();
 
-const router = useRouter()
-const dashboardStore = useDashboardStore()
+const userStore = useUserStore();
+const notificationStore = useNotificationStore();
+
 const userDropdownMenue = useUserDropdownMenue(
-    // user data
-    {
-        fullName: 'John Doe',
-    },
-    // logout function
+  computed(() => ({
+    username: userStore.$state.user?.username || 'Unknown User',
+    avatar: userStore.$state.user?.profilePicture || '',
+    email: userStore.$state.user?.email || 'unknown@example.com',
+    role: userStore.$state.user?.role || 'Guest',
+  })),
     () => {
-        localStorage.removeItem('token')
-        router.push('/sign-in')
+        localStorage.removeItem('token'); 
+        router.push('/sign-in'); 
     },
-)
-const notifications: NotificationSideBarProps['notification'] = ref([
-    {
-        message: 'Order number 1503 arrived',
-        time: '3 minute ago',
-        variant: 'success',
-    },
-    {
-        message: 'Your Have submitted new repair demand',
-        time: '1 day ago',
-        variant: 'normal',
-    },
-    {
-        message: 'Machine #CRP5 has broken gear',
-        time: '1 week ago',
-        variant: 'danger',
-    },
-])
-const demands: NotificationSideBarProps['demands'] = ref([
-    {
-        username: 'Tom freak',
-        message: 'Machine #CRP5 has broken gear',
-        time: '1 week ago',
-    },
-    {
-        username: 'Tom freak',
-        message: 'Machine #CRP6 has broken gear',
-        time: '1 week ago',
-    },
-    {
-        username: 'Tom freak',
-        message: 'Machine #CRP56 has broken gear',
-        time: '1 week ago',
-    },
-])
+);
+
+const notifications = computed<NotificationSideBarProps['notification']>(() => {
+    return notificationStore.notifications?.map((notif) => ({
+        message: notif.message,
+        time: notif.timeAgo,
+        variant: notif.variant,
+    })) ?? [];
+});
+const demands = computed<NotificationSideBarProps['demands']>(() => {
+    return notificationStore.demands?.map((demand) => ({
+        username: demand.username,
+        message: demand.message,
+        time: demand.timeAgo,
+    })) ?? [];
+});
 </script>
+
 <template>
     <div class="relative flex h-screen bg-background">
         <SideBar
             :user-dropdown-menue="userDropdownMenue"
             :config="DASHBOARD_SIDEBAR_LINKS"
-            :is-sidebar-collapsed="dashboardStore.isLeftSidebarCollapsed"
+            :is-sidebar-collapsed="userStore.isLeftSidebarCollapsed"
+            @logout="logout"
         />
+
         <main
             :class="
                 cn(
-                    'relative flex-1',
-                    !dashboardStore.isRightSidebarCollapsed && 'mr-[17.5rem]',
-                    !dashboardStore.isLeftSidebarCollapsed && 'md:pl-56',
+                    'relative flex-1 transition-all duration-300 ease-in-out',
+                    !userStore.isRightSidebarCollapsed && 'mr-[17.5rem]',
+                    !userStore.isLeftSidebarCollapsed && 'md:pl-56', 
                 )
             "
         >
             <DashboardNavigation
-                v-model:is-right-sidebar-collapsed="dashboardStore.isRightSidebarCollapsed"
-                v-model:is-left-sidebar-collapsed="dashboardStore.isLeftSidebarCollapsed"
+                v-model:is-right-sidebar-collapsed="userStore.isRightSidebarCollapsed"
+                v-model:is-left-sidebar-collapsed="userStore.isLeftSidebarCollapsed"
             />
+
             <RouterView />
         </main>
+
         <NotificationSideBar
             :notification="notifications"
             :demands="demands"
-            :is-sidebar-collapsed="dashboardStore.isRightSidebarCollapsed"
+            :is-sidebar-collapsed="userStore.isRightSidebarCollapsed"
         />
     </div>
 </template>

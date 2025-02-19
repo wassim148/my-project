@@ -94,7 +94,7 @@ export class AuthService {
 
   async authenticate(credentials: AuthenticationDto) {
     const user = await this.usersRepository.findOne({
-      where: { username: credentials.username },
+      where: { email: credentials.email },
       select: ['id', 'username', 'password', 'email'],
     });
 

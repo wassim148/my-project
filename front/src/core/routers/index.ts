@@ -1,19 +1,19 @@
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { ROUTES, DASHBOARD_ROUTES } from '@constants'
-
+import authGuard from '@/core/guards/auth.guard';
 
 export const router = createRouter({
     history: createMemoryHistory(),
     routes: [
         {
-            path: '/Settings',
-            name: 'Settings',
-            component: () => import('@/pages/Dashboard/Settings/Settings.vue')
+            ...ROUTES.HOME,
+            component: () => import('@/pages/Dashboard/MainDashboard.vue'),
         },
         {
-            ...ROUTES.HOME,
-            redirect: ROUTES.SIGN_IN.path,
+            ...ROUTES.AUTH,
             component: () => import('@pages/LandingPages/Home/Home.vue'),
+            redirect: `${ROUTES.AUTH.path}/${ROUTES.SIGN_IN.path}`,
+            beforeEnter: authGuard,
             children: [
                 {
                     ...ROUTES.SIGN_UP,
@@ -29,13 +29,9 @@ export const router = createRouter({
             ...ROUTES.MAIN,
             component: () => import('@pages/Dashboard/MainDashboard.vue'),
             children: [
-               {
-                 ...DASHBOARD_ROUTES.STOCKS,
-                 component: () => import('@pages/Dashboard/Stocks/Stocks.vue'),
-               },
                 {
-                  ...DASHBOARD_ROUTES.DEMANDES_CONGE,
-                  component: () => import('@pages/Dashboard/Conge/DemendeConge.vue'),
+                    ...DASHBOARD_ROUTES.DEMANDES_CONGE,
+                    component: () => import('@pages/Dashboard/Conge/DemendeConge.vue'),
                 },
                 {
                     ...DASHBOARD_ROUTES.PROFILE,
@@ -62,7 +58,7 @@ export const router = createRouter({
                     component: () => import('@/pages/Dashboard/Admin/EmployeeManagement.vue')
                 }
             ],
-            // beforeEnter: routeGuard,
+            beforeEnter: authGuard,
         },
     ],
 })

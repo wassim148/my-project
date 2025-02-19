@@ -19,6 +19,7 @@ export class CongesController {
   async pointageConge(@Body() PointageDto: any): Promise<Conge> {
     return this.congesService.pointage(PointageDto);
   }
+
   @Post('creer')
   async creerConge(@Body() createCongeDto: any): Promise<Conge> {
     return this.congesService.creerConge(createCongeDto);

@@ -2,7 +2,7 @@ import { useCookies } from 'vue3-cookies'
 import { ROUTES } from '@constants'
 
 const AUTH_ROUTES = [
-    ROUTES.LOGIN.name,
+    ROUTES.SIGN_IN.name,
     ROUTES.CONTACT_US.name,
     ROUTES.RESET_PASSWORD.name,
     ROUTES.UPDATE_PASSWORD.name,
@@ -13,7 +13,7 @@ export default async (to: any, from: any, next: any) => {
     const authentificated = !!cookies.get('user-token')
 
     if (!AUTH_ROUTES.includes(to.name) && !authentificated) {
-        next({ path: ROUTES.LOGIN.path })
+        next({ path: ROUTES.SIGN_IN.path })
         return
     }
 
@@ -23,7 +23,7 @@ export default async (to: any, from: any, next: any) => {
     }
 
     if (to.name == ROUTES.UPDATE_PASSWORD.name && !to.query.code) {
-        next({ path: ROUTES.LOGIN.path })
+        next({ path: ROUTES.SIGN_IN.path })
         return
     }
     next()

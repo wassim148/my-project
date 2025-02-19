@@ -33,7 +33,7 @@ type DropdownBtn = {
 export interface UserDropdownBtnProps {
     user: {
         avatar?: string
-        fullName: string
+        username: string
     }
     menue: {
         groupName?: string
@@ -63,11 +63,11 @@ const props = defineProps<UserDropdownBtnProps>()
                 <Avatar class="h-8 w-8">
                     <AvatarImage
                         :src="props.user.avatar ? props.user.avatar : 'https://api.dicebear.com/7.x/lorelei/svg'"
-                        :alt="props.user.fullName"
+                        :alt="props.user.username"
                     />
                     <AvatarFallback> DS </AvatarFallback>
                 </Avatar>
-                <span class="hidden md:block font-sans font-normal text-sm"> {{ props.user.fullName }} </span>
+                <span class="hidden md:block font-sans font-normal text-sm"> {{ props.user.username }} </span>
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="w-56">

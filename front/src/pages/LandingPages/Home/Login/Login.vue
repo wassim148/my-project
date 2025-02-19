@@ -88,7 +88,7 @@
           <img class="h-4 w-5" src="@/assets/img/DATIUM-02.png" />
           <span>Datuim-sass</span>
         </RouterLink>
-        <span class="text-xs">© Datuim-sass 2021</span>
+        <span class="text-xs">© Datuim-sass 2025</span>
       </div>
     </div>
   </template>
@@ -129,7 +129,7 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     await userStore.login(values);
     alert('Login successful!');
-    window.location.href = '/dashboard'; 
+    window.location.href = '/DemandesDeConge'; 
   } catch (error) {
     console.error(error);
     alert('An error occurred while logging in.');

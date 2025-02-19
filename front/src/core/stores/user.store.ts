@@ -1,15 +1,10 @@
 import { defineStore } from 'pinia';
-import { AxiosError} from 'axios';
-import { env } from '../constants';
+import { AxiosError } from 'axios';
+import { env, ROUTES } from '../constants';
 import axios from 'axios';
 import type { User } from '@/shared/interfaces/user';
-
-// interface User {
-//   id: number;
-//   username: string;
-//   email: string;
-//   [key: string]: any; 
-// }
+import { useCookies } from 'vue3-cookies';
+import { router } from '../routers';
 
 export interface UserStore {
   user: User | null;
@@ -18,8 +13,8 @@ export interface UserStore {
 
 export const useUserStore = defineStore('user', {
   state: (): UserStore => ({
-    user: null, 
-    isAuthenticated: !!localStorage.getItem('token'), 
+    user: null,
+    isAuthenticated: !!useCookies().cookies.get(env.TOKEN_KEY.toString()),
   }),
 
   getters: {
@@ -37,29 +32,27 @@ export const useUserStore = defineStore('user', {
       try {
         const response = await axios.post<{ token: string; user: User }>(`${env.BACKEND_BASE_URL}/api/auth/login`, data);
 
-        this.user = response.data.user;
-        this.isAuthenticated = true;
-
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        const { cookies } = useCookies();
+        cookies.set(env.TOKEN_KEY.toString(), response.data.token);
+        this.$patch({ user: response.data.user, isAuthenticated: true });
+        await router.push(ROUTES.MAIN);
       } catch (error) {
         console.error('Erreur lors de la connexion:', (error as AxiosError).response?.data);
-        throw error; 
+        throw error;
       }
     },
 
-    async signup(data: { username: string; email: string; password: string; role:string }): Promise<void> {
+    async signup(data: { username: string; email: string; password: string; role: string; numcin: number; profilePicture: File }): Promise<void> {
       try {
         const response = await axios.post<{ token: string; user: User }>(`${env.BACKEND_BASE_URL}/api/auth/signup`, data);
 
-        this.user = response.data.user;
-        this.isAuthenticated = true;
-
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        const { cookies } = useCookies();
+        cookies.set(env.TOKEN_KEY.toString(), response.data.token);
+        this.$patch({ user: response.data.user, isAuthenticated: true });
+        await router.push(ROUTES.MAIN);
       } catch (error) {
         console.error('Erreur lors de l\'inscription:', (error as AxiosError).response?.data);
-        throw error; 
+        throw error;
       }
     },
 
@@ -70,7 +63,7 @@ export const useUserStore = defineStore('user', {
         console.log('Réponse de la demande de réinitialisation:', response.data);
       } catch (error) {
         console.error('Erreur lors de la demande de réinitialisation:', (error as AxiosError).response?.data);
-        throw error; 
+        throw error;
       }
     },
 
@@ -94,18 +87,20 @@ export const useUserStore = defineStore('user', {
         });
       } catch (error) {
         console.error('Erreur lors de la récupération des utilisateurs:', (error as AxiosError).response?.data);
-        throw error; 
+        throw error;
       }
     },
 
     logout(): void {
+      const { cookies } = useCookies();
+      cookies.remove(env.TOKEN_KEY.toString());
       this.user = null;
       this.isAuthenticated = false;
-
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      router.push(ROUTES.SIGN_IN);
     },
   },
+  persist: true,
 });
 
 export default useUserStore;
+

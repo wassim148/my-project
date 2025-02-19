@@ -25,7 +25,7 @@
               <img v-if="profilePicturePreview" :src="profilePicturePreview" alt="Profile Picture Preview"
                 class="mt-2 w-20 h-20 rounded-full object-cover mx-auto border-2 border-gray-300" />
             </div>
-            <FormField name="firstname" v-slot="{ field, errorMessage }">
+            <FormField name="username" v-slot="{ field, errorMessage }">
               <FormItem>
                 <FormLabel>Firstname</FormLabel>
                 <FormControl>
@@ -72,11 +72,11 @@
                 <FormMessage>{{ errorMessage }}</FormMessage>
               </FormItem>
             </FormField>
-            <FormField name="cin" v-slot="{ field, errorMessage }">
+            <FormField name="numcin" v-slot="{ field, errorMessage }">
               <FormItem>
                 <FormLabel>CIN (National Identity Card Number)</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="12345678" v-bind="field" />
+                  <Input type="Number" placeholder="12345678" v-bind="field" />
                 </FormControl>
                 <FormMessage>{{ errorMessage }}</FormMessage>
               </FormItem>
@@ -100,7 +100,7 @@
         <img class="h-4 w-5" src="@/assets/img/DATIUM-02.png" />
         <span>Datuim-sass</span>
       </RouterLink>
-      <span class="text-xs">© Datuim-sass 2021</span>
+      <span class="text-xs">© Datuim-sass 2025</span>
     </div>
   </div>
 </template>
@@ -120,15 +120,14 @@ import { Icon } from '@iconify/vue';
 
 const formSchema = toTypedSchema(
   z.object({
-    firstname: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
+    username: z.string().min(2, { message: 'First name must be at least 2 characters.' }),
     email: z.string().email({ message: 'Invalid email address!' }),
     password: z.string()
       .min(8, { message: 'Password is too short' })
       .max(20, { message: 'Password is too long' }),
     profession: z.string().min(3, { message: 'Profession must be at least 3 characters.' }),
-    cin: z.string().min(8, { message: 'CIN must be at least 9 digits.' }).regex(/^\d+$/, {
-      message: 'CIN must only contain numbers.',
-    }),
+    numcin: z.number().min(8, { message: 'CIN must be at least 8 digits.' }),
+    profilePicture: z.any().nullable(),
   }),
 );
 
@@ -140,8 +139,8 @@ const userStore = useUserStore();
 
 const onSubmit = handleSubmit(async (values) => {
   try {
-    await userStore.signup({ ...values, role: role.value });
-    alert('Account created successfully!');
+    console.log(values)
+await userStore.signup({ ...values, role: role.value, profilePicture: values.profilePicture || null });    alert('Account created successfully!');
     window.location.href = '/sign-in';
   } catch (error) {
     console.error(error);

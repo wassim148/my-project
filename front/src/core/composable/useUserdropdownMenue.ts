@@ -1,11 +1,14 @@
 
 import { type UserDropdownBtnProps } from '@/shared/components/SideBar/UserDropdownBtn/UserDropdownBtn.vue'
+import useUserStore from '../stores/user.store'
+
+const userStore = useUserStore()
 
 const useUserDropdownMenue = (user: UserDropdownBtnProps['user'], logout: () => void): UserDropdownBtnProps => ({
     user,
     menue: [
         {
-            groupName: `Welcome ${user.fullName}`,
+            groupName: `Welcome ${user.username}`,
             items: [
                 {
                     type: 'menue-item',
@@ -43,7 +46,7 @@ const useUserDropdownMenue = (user: UserDropdownBtnProps['user'], logout: () => 
                     type: 'menue-item',
                     label: 'Logout',
                     action: 'onClick',
-                    event: logout,
+                    event: userStore.logout,
                 },
             ],
         },

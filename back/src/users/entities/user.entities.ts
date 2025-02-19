@@ -4,6 +4,8 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Conge } from 'src/congée/entities/congée.entity';
 import { Notification } from 'src/notification/entities/notification.entity';
 import { Role } from 'src/auth/enums/role.enum';
+import { Event } from 'src/event/entities/event.entity';
+import { LeaveRequest } from 'src/leave-request/entities/leave-request.entity';
 
 @Entity()
 export class User {
@@ -62,4 +64,10 @@ export class User {
 
   @OneToMany(() => Conge, (conge) => conge.user)
   conges: Conge[];
+
+  @OneToMany(() => Event, (event) => event.user)
+  events: Event[];
+
+  @OneToMany(() => LeaveRequest, (leaveRequest) => leaveRequest.user)
+  leaveRequests: LeaveRequest[];
 }
