@@ -10,6 +10,8 @@ import { Conge } from './entities/congée.entity';
 import { WebsocketGateway } from 'src/webSockets/websockets-gateway';
 import { CreateCongéeDto } from './dto/create-congée.dto';
 import { NotificationsService } from 'src/notification/notification.service';
+import { HttpExceptionFilter } from 'src/exception-filter/http-exception.filter';
+// import { Console } from 'console';
 
 @Injectable()
 export class CongesService {
@@ -21,30 +23,38 @@ export class CongesService {
     private readonly websocketGateway: WebsocketGateway,
   ) {}
 
-  async pointage(PointageDto: any): Promise<Conge> {
-    const pointage = await this.congeRepository.preload({
-      id: PointageDto.id,
-      dateHeure: PointageDto.dateHeure,
-      employeId: Number(PointageDto.employeId),
-    });
-    if (!pointage) {
-      throw new Error('pointage non trouvé');
+  // async pointage(PointageDto: any): Promise<Conge> {
+  //   const pointage = await this.congeRepository.preload({
+  //     id: PointageDto.id,
+  //     dateHeure: PointageDto.dateHeure,
+  //     employeId: Number(PointageDto.employeId),
+  //   });
+  //   if (!pointage) {
+  //     throw new Error('pointage non trouvé');
+  //   }
+  //   pointage.dateHeure = PointageDto.dateHeure;
+  //   const savedPointage = await this.congeRepository.save(pointage);
+  //   this.websocketGateway.server.emit('pointage', savedPointage);
+  //   return savedPointage;
+  // }
+
+  async creerConge(
+    createCongeDto: CreateCongéeDto,
+    id: number,
+  ): Promise<Conge> {
+    console.log(createCongeDto);
+    try {
+      const conge = this.congeRepository.create({
+        ...createCongeDto,
+        employeId: id,
+      });
+      const savedConge = await this.congeRepository.save(conge);
+      this.websocketGateway.server.emit('conge_created', savedConge);
+      return savedConge;
+    } catch (error) {
+      console.log(error);
+      throw HttpExceptionFilter;
     }
-    pointage.dateHeure = PointageDto.dateHeure;
-    const savedPointage = await this.congeRepository.save(pointage);
-    this.websocketGateway.server.emit('pointage', savedPointage);
-    return savedPointage;
-  }
-
-  async creerConge(createCongeDto: CreateCongéeDto): Promise<Conge> {
-    const conge = this.congeRepository.create({
-      ...createCongeDto,
-      numcin: Number(createCongeDto.numcin),
-    });
-
-    const savedConge = await this.congeRepository.save(conge);
-    this.websocketGateway.server.emit('conge_created', savedConge);
-    return savedConge;
   }
 
   async getConge(id: number): Promise<Conge> {

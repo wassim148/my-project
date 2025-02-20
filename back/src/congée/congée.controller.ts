@@ -7,22 +7,27 @@ import {
   Patch,
   Delete,
   Put,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { CongesService } from './congée.service';
 import { Conge } from './entities/congée.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('conges')
 export class CongesController {
   constructor(private readonly congesService: CongesService) {}
 
-  @Post('pointage')
-  async pointageConge(@Body() PointageDto: any): Promise<Conge> {
-    return this.congesService.pointage(PointageDto);
-  }
+  // @Post('pointage')
+  // async pointageConge(@Body() PointageDto: any): Promise<Conge> {
+  //   return this.congesService.pointage(PointageDto);
+  // }
 
   @Post('creer')
-  async creerConge(@Body() createCongeDto: any): Promise<Conge> {
-    return this.congesService.creerConge(createCongeDto);
+  async creerConge(@Req() req, @Body() createCongeDto: any) {
+    const id = req.user.id;
+    return this.congesService.creerConge(createCongeDto, id);
   }
 
   @Get(':id')

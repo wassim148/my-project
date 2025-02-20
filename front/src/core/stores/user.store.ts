@@ -11,24 +11,33 @@ export interface UserStore {
   isAuthenticated: boolean;
 }
 
-export const useUserStore = defineStore('user', {
-  state: (): UserStore => ({
-    user: null,
-    isAuthenticated: !!useCookies().cookies.get(env.TOKEN_KEY.toString()),
-  }),
+  export const useUserStore = defineStore('user', {
+    state: () => ({
+      user: null,
+      isAuthenticated: !!useCookies().cookies.get(env.TOKEN_KEY.toString()),
+      token: useCookies().cookies.get(env.TOKEN_KEY.toString()) || '', // Ajoutez cette ligne
+    }),
 
   getters: {
     username(): string {
       return this.user?.username || '';
     },
 
-    isAdmin(): boolean {
-      return this.user?.role === 'admin' || false;
-    },
+   isAdmin(): boolean {
+     return this.user?.role === 'admin' || false;
+   },
+   
+   employeId(): number | null {
+       const token = useCookies().cookies.get(env.TOKEN_KEY.toString());
+       if (!token) {
+           throw new Error('No authentication token found');
+       }
+       return this.user?.id || null;
+   }
   },
 
   actions: {
-    async login(data: { email: string; password: string }): Promise<void> {
+    async login(data: { email: string; password: string }) {
       try {
         const response = await axios.post<{ token: string; user: User }>(`${env.BACKEND_BASE_URL}/api/auth/login`, data);
 
@@ -42,7 +51,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async signup(data: { username: string; email: string; password: string; role: string; numcin: number; profilePicture: File }): Promise<void> {
+    async signup(data: { username: string; email: string; password: string; role: string; numcin: number; profilePicture: File }) {
       try {
         const response = await axios.post<{ token: string; user: User }>(`${env.BACKEND_BASE_URL}/api/auth/signup`, data);
 
@@ -56,7 +65,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async forgetPassword(data: { email: string }): Promise<void> {
+    async forgetPassword(data: { email: string }) {
       try {
         const response = await axios.post<{ message: string }>(`${env.BACKEND_BASE_URL}/api/auth/forget`, data);
 
@@ -67,7 +76,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async resetPassword(data: { token: string; password: string }): Promise<void> {
+    async resetPassword(data: { token: string; password: string }) {
       try {
         const response = await axios.post<{ message: string }>(`${env.BACKEND_BASE_URL}/api/auth/reset`, data);
 
@@ -78,7 +87,7 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    async fetchUsers(): Promise<void> {
+    async fetchUsers() {
       try {
         const response = await axios.get<User[]>(`${env.BACKEND_BASE_URL}/api/users`);
 
@@ -91,15 +100,15 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    logout(): void {
+    logout() {
       const { cookies } = useCookies();
       cookies.remove(env.TOKEN_KEY.toString());
       this.user = null;
       this.isAuthenticated = false;
       router.push(ROUTES.SIGN_IN);
-    },
+    }
   },
-  persist: true,
+  persist: true
 });
 
 export default useUserStore;

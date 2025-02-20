@@ -8,6 +8,7 @@ export const router = createRouter({
         {
             ...ROUTES.HOME,
             component: () => import('@/pages/Dashboard/MainDashboard.vue'),
+            beforeEnter: authGuard,
         },
         {
             ...ROUTES.AUTH,
@@ -28,9 +29,11 @@ export const router = createRouter({
         {
             ...ROUTES.MAIN,
             component: () => import('@pages/Dashboard/MainDashboard.vue'),
+            beforeEnter: authGuard,
             children: [
                 {
                     ...DASHBOARD_ROUTES.DEMANDES_CONGE,
+                    beforeEnter: authGuard,
                     component: () => import('@pages/Dashboard/Conge/DemendeConge.vue'),
                 },
                 {
@@ -58,7 +61,6 @@ export const router = createRouter({
                     component: () => import('@/pages/Dashboard/Admin/EmployeeManagement.vue')
                 }
             ],
-            beforeEnter: authGuard,
         },
     ],
 })

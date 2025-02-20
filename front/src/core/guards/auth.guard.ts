@@ -11,6 +11,7 @@ const AUTH_ROUTES = [
 export default async (to: any, from: any, next: any) => {
     const { cookies } = useCookies()
     const authentificated = !!cookies.get('user-token')
+    console.log('authentificated', authentificated)
 
     if (!AUTH_ROUTES.includes(to.name) && !authentificated) {
         next({ path: ROUTES.SIGN_IN.path })

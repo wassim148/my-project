@@ -1,12 +1,10 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, Max, Min } from 'class-validator';
 
 export class CreateCongéeDto {
-  // @IsNotEmpty()
-  // @IsString()
-  // username: string;
-
   @IsNotEmpty()
   @IsString()
+  @Min(0)
+  @Max(99999999)
   numcin: number;
 
   @IsNotEmpty()
@@ -20,10 +18,6 @@ export class CreateCongéeDto {
   @IsNotEmpty()
   @IsString()
   typeConge: string;
-
-  // @IsNotEmpty()
-  // @IsString()
-  // statut: string;
 
   @IsNotEmpty()
   @IsString()

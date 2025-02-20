@@ -2,9 +2,9 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  CreateDateColumn,
+  // CreateDateColumn,
+  // UpdateDateColumn,
   ManyToOne,
-  UpdateDateColumn,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entities';
 
@@ -16,7 +16,7 @@ export class Conge {
   @Column()
   employeId: number;
 
-  @Column()
+  @Column({type: 'bigint'})
   numcin: number;
 
   @Column({ type: 'date' })
@@ -35,17 +35,16 @@ export class Conge {
   })
   status: 'waiting' | 'accepted' | 'refused';
 
-  @CreateDateColumn()
-  createdAt: Date;
+  // @CreateDateColumn()
+  // createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  // @UpdateDateColumn()
+  // updatedAt: Date;
+  // @Column()
+  // dateHeure: string;
 
   @Column()
   raison: string;
-
-  @Column()
-  dateHeure: string;
 
   @ManyToOne(() => User, (user) => user.conges)
   user: User;
