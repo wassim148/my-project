@@ -1,23 +1,19 @@
 <template>
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-center mb-6">Gestion des congés</h1>
+
         <form @submit.prevent="envoyerDemande" class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto mb-8">
-            <!-- NUM CIN Field -->
             <label for="numCIN" class="block text-sm font-medium text-gray-700 mb-2">NUM CIN :</label>
             <input
                 v-model.number="demande.numcin"
                 type="number"
                 required
-                placeholder="Entrez votre CIN"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
-            <p v-if="!errors.numcin" class="text-red-500 text-sm mt-1">{{ errors.numcin }}</p>
 
-            <!-- Type de Congé Field -->
             <label for="typeConge" class="block text-sm font-medium text-gray-700 mt-4 mb-2">Type de congé :</label>
             <select
                 v-model="demande.typeConge"
-                required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             >
                 <option value="annuel">Annuel</option>
@@ -25,7 +21,6 @@
                 <option value="sans solde">Sans solde</option>
             </select>
 
-            <!-- Date Début Field -->
             <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Date début :</label>
             <input
                 v-model="demande.dateDebut"
@@ -34,7 +29,6 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
 
-            <!-- Date Fin Field -->
             <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Date fin :</label>
             <input
                 v-model="demande.dateFin"
@@ -43,19 +37,15 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
 
-            <!-- Description Field -->
             <div class="mb-4">
                 <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">Description (raison) :</label>
                 <textarea
                     v-model="demande.raison"
                     rows="4"
-                    required
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 ></textarea>
             </div>
-
-            <!-- Justificatif Field (if typeConge is 'maladie') -->
-            <div v-if="demande.typeConge === 'maladie'" class="mb-4">
+            <div v-if="demande.typeConge == 'maladie'" class="mb-4">
                 <label for="justificatif" class="block text-sm font-medium text-gray-700 mb-2">Pièce(s) justificative(s) :</label>
                 <input
                     type="file"
@@ -70,7 +60,6 @@
                 </p>
             </div>
 
-            <!-- Submit Button -->
             <button
                 type="submit"
                 class="w-full bg-green-500 text-white font-medium py-2 px-4 rounded-md mt-6 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -79,7 +68,6 @@
             </button>
         </form>
 
-        <!-- List of Congés -->
         <h2 class="text-2xl font-semibold text-center mb-6">Mes demandes de congé</h2>
         <ul class="space-y-4">
             <li
@@ -99,91 +87,88 @@
                 </span>
             </li>
         </ul>
-        <button @click="fetchConges" class="mt-4 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
-            Rafraîchir
-        </button>
+        <button @click="fetchConges">Rafraîchir</button>
     </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import { useCongeStore } from '@/core/stores/conge.store';
-import { useUserStore } from '@/core/stores/user.store';
-import { useForm } from 'vee-validate';
-import { storeToRefs } from 'pinia';
-import { Conge } from '@/core/types/conge.type';
+import { reactive, ref } from 'vue'
+import { useCongeStore } from '@/core/stores/conge.store'
+import { useUserStore } from '@/core/stores/user.store'
+import { storeToRefs } from 'pinia'
+import { useVuelidate } from '@vuelidate/core'
+import { required, helpers } from '@vuelidate/validators'
+import { toTypedSchema } from '@vee-validate/zod';
+import * as z  from 'zod';
+import { useForm } from 'vee-validate'
 
-// Define the form schema for validation
-const formSchema = {
-    numcin: (value: string) => !!value || 'Le numéro CIN est requis.',
-    typeConge: (value: string) => !!value || 'Le type de congé est requis.',
-    dateDebut: (value: string) => !!value || 'La date de début est requise.',
-    dateFin: (value: string) => !!value || 'La date de fin est requise.',
-    raison: (value: string) => (value && value.length >= 5) || 'La description doit contenir au moins 5 caractères.',
-};
+const formSchema = toTypedSchema(
+  z.object({
+    numcin: z.string().min(8, { message: 'CIN must be at least 8 digits.' }),
+    typeConge: z.string().min(1, { message: 'Type de congé is required.' }),
+    dateDebut: z.string().refine((date) => !isNaN(Date.parse(date)), { message: 'Invalid start date.' }),
+    dateFin: z.string().refine((date) => !isNaN(Date.parse(date)), { message: 'Invalid end date.' }),
+    raison: z.string().min(5, { message: 'Description must be at least 5 characters.' }),
+  }),
+);
 
-// Initialize the Vuelidate library for form validation
 const { handleSubmit, errors } = useForm({
-    validationSchema: formSchema,
+  validationSchema: formSchema,
 });
 
-// Reactive state for the form data
+const congeStore = useCongeStore()
+const userStore = useUserStore()
+const { conges } = storeToRefs(congeStore)
+
 const demande = reactive({
     numcin: '',
     typeConge: '',
     dateDebut: new Date().toISOString().split('T')[0],
     dateFin: new Date().toISOString().split('T')[0],
     raison: '',
-});
 
-// File input reference
-const fileInput = ref<HTMLInputElement | null>(null);
-const selectedFiles = ref<File[]>([]);
+})
 
-// Handle file selection
+const fileInput = ref<HTMLInputElement | null>(null)
+const selectedFiles = ref<File[]>([])
+
 const handleFileChange = () => {
     if (fileInput.value && fileInput.value.files) {
-        selectedFiles.value = Array.from(fileInput.value.files);
+        selectedFiles.value = Array.from(fileInput.value.files)
     }
-};
+}
 
-// Fetch congés from the store
-const congeStore = useCongeStore();
-const userStore = useUserStore();
-const { conges } = storeToRefs(congeStore);
-
-// Function to submit the form
 const envoyerDemande = async () => {
-    const employeId = userStore.user?.id;
-    const username = userStore.user?.username;
+    const employeId = userStore.user?.id
+    const username = userStore.user?.username
+    const formData = new FormData()
+    formData.append('numcin', demande.numcin)
+    formData.append('typeConge', demande.typeConge)
+    formData.append('dateDebut', demande.dateDebut)
+    formData.append('dateFin', demande.dateFin)
+    formData.append('raison', demande.raison)
+    formData.append('employeId', employeId)
+    formData.append('username', username)
 
-    // Create a FormData object to send the request
-    const congeData: Conge = {
-      numcin: demande.numcin,
-      typeConge: demande.typeConge,
-      dateDebut: demande.dateDebut,
-      dateFin: demande.dateFin,
-      raison: demande.raison,
-      employeId: employeId,
-      username: username,
-      files: selectedFiles.value,
-    };
+    selectedFiles.value.forEach((file, index) => {
+        formData.append(`files[${index}]`, file)
+    })
+
     
-    await congeStore.createConge(congeData);
-    // Reset the form after successful submission
-    demande.numcin = '';
-    demande.typeConge = '';
-    demande.dateDebut = '';
-    demande.dateFin = '';
-    demande.raison = '';
-    selectedFiles.value = [];
-    if (fileInput.value) {
-        fileInput.value.value = ''; // Clear the file input
-    }
-};
+    await congeStore.createConge(formData, employeId, username)
 
-// Function to refresh the list of congés
+    demande.numcin = ''
+    demande.typeConge = ''
+    demande.dateDebut = ''
+    demande.dateFin = ''
+    demande.raison = ''
+    selectedFiles.value = []
+    if (fileInput.value) {
+        fileInput.value.value = '' 
+    }
+}
 const fetchConges = () => {
-    congeStore.fetchConges();
-};
+    congeStore.fetchConges()
+}
 </script>
+

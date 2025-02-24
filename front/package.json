@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
+    "@fullcalendar/vue3": "^6.1.15",
     "@iconify-json/radix-icons": "^1.1.14",
     "@nestjs/platform-socket.io": "^11.0.9",
+    "@types/fullcalendar": "^3.8.0",
     "@unovis/ts": "^1.4.1",
     "@unovis/vue": "^1.4.1",
     "@vee-validate/zod": "^4.13.1",

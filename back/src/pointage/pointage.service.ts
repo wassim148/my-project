@@ -43,8 +43,8 @@ export class PointageService {
     return this.pointageRepository.save(pointage);
   }
 
-  async generateLeaveReport(year: number): Promise<any> {
-    const leaves = await this.congesService.getTousLesConges();
+  async generateLeaveReport(year: number, employeId: number): Promise<any> {
+    const leaves = await this.congesService.getTousLesConges(employeId);
     return leaves.filter((leave) => {
       const date = new Date(leave.dateDebut);
       return date.getFullYear() === year;

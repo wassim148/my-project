@@ -24,10 +24,16 @@ export class CongesController {
   //   return this.congesService.pointage(PointageDto);
   // }
 
+  @Get('/all')
+  async getAllConges(): Promise<Conge[]> {
+    return this.congesService.getAllConges();
+  }
+
   @Post('creer')
   async creerConge(@Req() req, @Body() createCongeDto: any) {
     const id = req.user.id;
-    return this.congesService.creerConge(createCongeDto, id);
+    const user = req.user.username;
+    return this.congesService.creerConge(createCongeDto, id, user);
   }
 
   @Get(':id')
@@ -43,17 +49,18 @@ export class CongesController {
   @Put('/valider/:id')
   async validerConge(
     @Param('id') id: number,
-    @Param('statut') statut: 'waiting' | 'accepted' | 'refused',
+    @Body('status') status: string,
   ): Promise<Conge> {
-    return this.congesService.validerConge(id, statut);
+    return this.congesService.validerConge(id, status);
   }
 
   @Get()
-  async getTousLesConges(): Promise<Conge[]> {
-    return this.congesService.getTousLesConges();
+  async getTousLesConges(@Req() req): Promise<Conge[]> {
+    const id = req.user.id;
+    return this.congesService.getTousLesConges(id);
   }
 
-  @Delete(':id/supprimer')
+  @Delete('/supprimer/:id')
   async supprimerConge(@Param('id') id: number): Promise<void> {
     return this.congesService.supprimerConge(id);
   }

@@ -6,7 +6,8 @@ import {useUserStore} from './user.store';
 
 export const useCongeStore = defineStore('conge', {
     state: () => ({
-        conges: [] as Conge[],
+        conges: [] as any,
+        // Allconge: [] as any,
     }),
     getters: {
         sortedConges(): Conge[] {
@@ -15,21 +16,22 @@ export const useCongeStore = defineStore('conge', {
             );
         },
         pendingConges(): Conge[] {
-            return this.conges.filter((conge) => conge.statut === 'en attente');
+            return this.conges.filter((conge) => conge.status === 'waiting');
         },
         acceptedConges(): Conge[] {
-            return this.conges.filter((conge) => conge.statut === 'accepté');
+            return this.conges.filter((conge) => conge.status === 'accepted');
         },
         rejectedConges(): Conge[] {
-            return this.conges.filter((conge) => conge.statut === 'refusé');
+            return this.conges.filter((conge) => conge.status === 'refused');
         },
     },
     actions: {
-        async fetchConges(): Promise<void> {
+        async fetchConges() {
             try {
-                const response =  window.$axios.get(`${env.BACKEND_BASE_URL}/api/conges`, {
-                });
-                this.conges = response.data;
+                const response = await window.$axios.get(`${env.BACKEND_BASE_URL}/api/conges`);
+                
+                this.$patch({conges:response})
+                 
             } catch (error: any) {
                 if (error.response && error.response.status === 401) {
                     console.error('Unauthorized access. Please log in again.');
@@ -40,21 +42,36 @@ export const useCongeStore = defineStore('conge', {
                 }
             }
         },
-        async createConge(conge: Conge, employeId: number): Promise<void> {
-          try {
-            const response = await window.$axios.post(
-              `${env.BACKEND_BASE_URL}/api/conges/creer`,
-              conge,
-            );
-            this.conges.push(response.data);
-          } catch (error: any) {
-            console.error('Erreur lors de la création du congé:', error.message || error);
-            throw error;
-          }
+        
+        // async fetchCongestypes() {
+        //     try {
+        //         const response = await window.$axios.get(
+        //             `${env.BACKEND_BASE_URL}/api/conges/AllConges`,
+        //         );
+        //         this.$patch({conges:response})
+        //         return response.data;
+        //     } catch (error: any) {
+        //         console.error('Erreur lors de la récupération des types de congés:', error.message || error);
+        //         throw error;
+        //     }
+        // },
+
+        async createConge(conge: Conge): Promise<void> {
+            try {
+                const response = await window.$axios.post(
+                    `${env.BACKEND_BASE_URL}/api/conges/creer`,
+                    conge,
+                );
+                console.log(conge);
+                this.conges.push(response.data);
+            } catch (error: any) {
+                console.error('Erreur lors de la création du congé:', error.message || error);
+                throw error;
+            }
         },
         async updateConge(conge: Conge, employeId: number): Promise<void> {
             try {
-                const response =await window.$axios.put<Conge>(
+                const response = await window.$axios.put<Conge>(
                     `${env.BACKEND_BASE_URL}/api/conges/${conge.id}`,
                     conge,
                 );
@@ -69,14 +86,15 @@ export const useCongeStore = defineStore('conge', {
         },
         async deleteConge(id: number): Promise<void> {
             try {
-                await window.$axios.delete(`${env.BACKEND_BASE_URL}/api/conges/${id}`, {
-                });
+                await window.$axios.delete(`${env.BACKEND_BASE_URL}/api/conges/${id}`);
                 this.conges = this.conges.filter((c) => c.id !== id);
             } catch (error: any) {
                 console.error('Erreur lors de la suppression du congé:', error.message || error);
                 throw error;
             }
         },
+
     },
 });
+
 

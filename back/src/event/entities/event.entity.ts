@@ -1,25 +1,22 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from 'src/users/entities/user.entities';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'date' })
-  date: Date;
-
   @Column()
   description: string;
 
-  @Column({ nullable: true })
-  checkInTime?: Date;
+  @Column()
+  date: Date;
 
   @Column({ nullable: true })
-  checkOutTime?: Date;
+  checkInTime: Date;
 
   @Column({ nullable: true })
-  employeeId?: number;
+  checkOutTime: Date;
 
   @ManyToOne(() => User, (user) => user.events)
   user: User;

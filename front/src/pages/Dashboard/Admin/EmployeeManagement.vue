@@ -12,9 +12,9 @@
       </thead>
       <tbody>
         <tr v-for="(employee, index) in employees" :key="index" class="border-b">
-          <td class="p-2">{{ employee.name }}</td>
-          <td class="p-2">{{ employee.email }}</td>
-          <td class="p-2">{{ employee.role }}</td>
+          <td class="p-2">{{ UserStore.$state.user.username }}</td>
+          <td class="p-2">{{ UserStore.$state.user.email }}</td>
+          <td class="p-2">{{ UserStore.$state.user.role }}</td>
           <td class="p-2">
             <button class="sl-button sl-button--primary" @click="editEmployee(employee.id)">Éditer</button>
             <button class="sl-button sl-button--danger" @click="deleteEmployee(employee.id)">Supprimer</button>
@@ -28,7 +28,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import useUserStore from '@/core/stores/user.store'
 
+const UserStore=useUserStore()
 const employees = ref([])
 
 async function fetchEmployees() {
@@ -52,4 +54,5 @@ function deleteEmployee(id: number) {
 
 onMounted(fetchEmployees)
 </script>
+
 

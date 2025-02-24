@@ -2,7 +2,7 @@ export interface LeaveRequest {
     id: number;
     startAt: string;
     endAt: string;
-    statut: 'en attente' | 'accepté' | 'refusé';
+    status: 'waiting' | 'accepted' | 'refused';
     userId: number;
     createdAt: string;
     updatedAt: string;

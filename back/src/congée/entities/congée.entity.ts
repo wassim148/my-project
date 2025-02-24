@@ -14,16 +14,19 @@ export class Conge {
   id: number;
 
   @Column()
+  username: string;
+
+  @Column()
   employeId: number;
 
-  @Column({type: 'bigint'})
+  @Column()
   numcin: number;
 
   @Column({ type: 'date' })
-  dateDebut: string;
+  dateDebut: Date;
 
   @Column({ type: 'date' })
-  dateFin: string;
+  dateFin: Date;
 
   @Column()
   typeConge: string;
@@ -33,7 +36,7 @@ export class Conge {
     enum: ['waiting', 'accepted', 'refused'],
     default: 'waiting',
   })
-  status: 'waiting' | 'accepted' | 'refused';
+  status: string;
 
   // @CreateDateColumn()
   // createdAt: Date;
@@ -45,6 +48,9 @@ export class Conge {
 
   @Column()
   raison: string;
+
+  // @Column({ nullable: true })
+  // piècesjustificatives?: string;
 
   @ManyToOne(() => User, (user) => user.conges)
   user: User;

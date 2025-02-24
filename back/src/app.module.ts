@@ -14,6 +14,7 @@ import { NotificationModule } from './notification/notification.module';
 import { PointageModule } from './pointage/pointage.module';
 import { EventModule } from './event/event.module';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { LeaveRequestModule } from './leave-request/leave-request.module';
     PointageModule,
     EventModule,
     LeaveRequestModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, WebsocketsModule],

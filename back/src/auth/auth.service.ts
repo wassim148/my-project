@@ -224,6 +224,7 @@ export class AuthService {
     }
     const currenUser: CurrentUser = {
       id: user.id,
+      username: user.username,
       role: user.role,
     };
     return currenUser;

@@ -6,50 +6,21 @@ const sidebarNavigation: SideBarProps['config'] = [
         navigations: [
             {
                 type: 'button',
-                label: 'Default',
-                icon: 'ph:chart-pie-slice-duotone',
-                to: 'main',
-            },
-            // {
-            //     type: 'button',
-            //     label: 'Stocks',
-            //     to: 'Stockes',
-            //     icon: 'ph:dropbox-logo-fill',
-            //     // links: [
-            //     //     {
-            //     //         label: 'Pices',
-            //     //         to: 'home',
-            //     //         icon: 'ph:puzzle-piece',
-            //     //     },
-            //     //     {
-            //     //         label: 'Machines',
-            //     //         to: 'main',
-            //     //         icon: 'ph:crane',
-            //     //     },
-            //     //     {
-            //     //         label: 'Order',
-            //     //         to: 'home',
-            //     //         icon: 'ph:shopping-cart',
-            //     //     },
-            //     // ],
-            // },
-            {
-                type: 'button',
-                label: 'demands de Conge',
+                label: 'demands ',
                 to: 'DemandesDeConge',
-                icon: 'ph:briefcase-duotone',
+                icon: 'ph:file-text-bold',
             },
             {
                 type: 'button',
-                label: 'Tableau de Suivi',
+                label: 'Tableau',
                 to: 'TableaudeSuivi',
-                icon: 'ph:users-three-duotone',
+                icon: 'ph:table-duotone',
             },
             {
                 type: 'button',
-                label: 'Calendrier Interactif',
+                label: 'Calendrier',
                 to: 'CalendrierInteractif',
-                icon: 'ph:users-three-duotone',
+                icon: 'ph:calendar-duotone',
             },
             {
                 type: 'button',
@@ -61,7 +32,7 @@ const sidebarNavigation: SideBarProps['config'] = [
                 type: 'button',
                 label: 'Admin',
                 to: 'AdminDashboard',
-                icon: 'ph:admin'
+                icon: 'ph:admin-duotone'
             },
             {
                 type: 'button',

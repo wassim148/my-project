@@ -1,5 +1,4 @@
 export const DASHBOARD_ROUTES = {
-  STOCKS: { name: 'Stocks', path: '/stocks' },
   PROFILE: { name: 'Profile', path: '/profile' },
   TABLEAU_SUIVI: { name: 'TableaudeSuivi', path: '/TableaudeSuivi' },
   CALENDRIER_INTERACTIF: { name: 'CalendrierInteractif', path: '/CalendrierInteractif' },

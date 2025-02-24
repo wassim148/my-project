@@ -7,7 +7,7 @@
           <th class="p-2 text-left">Employé</th>
           <th class="p-2 text-left">Type</th>
           <th class="p-2 text-left">Période</th>
-          <th class="p-2 text-left">Statut</th>
+          <th class="p-2 text-left">Status</th>
           <th class="p-2 text-left">Actions</th>
         </tr>
       </thead>

@@ -1,12 +1,10 @@
-export interface Conge {
-    // id: number;
-    numcin: number;
-    dateDebut: string;
-    dateFin: string;
-    raison: string;
-    typeConge: string;
-    // statut: 'en attente' | 'accepté' | 'refusé';
-    // employeId: number;
-    // createdAt: string;
-    // updatedAt: string;
+interface Conge {
+  numcin: string;
+  typeConge: string;
+  dateDebut: string;
+  dateFin: string;
+  raison: string;
+  employeId: number;
+  username: string;
+  files: File[];
 }

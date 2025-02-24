@@ -41,12 +41,14 @@ export class CongesService {
   async creerConge(
     createCongeDto: CreateCongéeDto,
     id: number,
+    user: string,
   ): Promise<Conge> {
     console.log(createCongeDto);
     try {
       const conge = this.congeRepository.create({
         ...createCongeDto,
         employeId: id,
+        username: user,
       });
       const savedConge = await this.congeRepository.save(conge);
       this.websocketGateway.server.emit('conge_created', savedConge);
@@ -69,18 +71,16 @@ export class CongesService {
     });
   }
 
-  async validerConge(
-    id: number,
-    statut: 'waiting' | 'accepted' | 'refused',
-  ): Promise<Conge> {
+  async validerConge(id: number, status: string): Promise<Conge> {
     const conge = await this.congeRepository.findOne({ where: { id } });
     if (!conge) {
-      throw new Error('Congé non trouvé');
+      console.error(`Leave with id ${id} not found`);
+      throw new NotFoundException(`Leave with id ${id} not found`);
     }
-    conge.status = statut;
+    conge.status = status;
+    console.log(status);
     const savedConge = await this.congeRepository.save(conge);
-    // Ajouter une notification
-    const message = `Votre demande de congé du ${conge.dateDebut} au ${conge.dateFin} a été ${statut} par l'administration.`;
+    const message = `Votre demande de congé du ${conge.dateDebut} au ${conge.dateFin} a été ${status} par l'administration.`;
     await this.notificationsService.createNotification(
       conge.employeId,
       message,
@@ -89,8 +89,8 @@ export class CongesService {
     return savedConge;
   }
 
-  async getTousLesConges(): Promise<Conge[]> {
-    const conges = await this.congeRepository.find();
+  async getTousLesConges(id: number): Promise<Conge[]> {
+    const conges = await this.congeRepository.findBy({ employeId: id });
     this.websocketGateway.server.emit('conges_updated', conges);
     return conges;
   }
@@ -109,5 +109,8 @@ export class CongesService {
 
     conge.status = status;
     return this.congeRepository.save(conge);
+  }
+  async getAllConges(): Promise<Conge[]> {
+    return this.congeRepository.find({ where: { status: 'waiting' } });
   }
 }
