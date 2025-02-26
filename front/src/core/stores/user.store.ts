@@ -8,32 +8,34 @@ import { router } from '../routers';
 
 export interface UserStore {
   user: User | null;
+  users: User[];
   isAuthenticated: boolean;
+  token: string;
 }
 
-  export const useUserStore = defineStore('user', {
-    state: () => ({
-      user: null,
-      isAuthenticated: !!useCookies().cookies.get(env.TOKEN_KEY.toString()),
-      token: useCookies().cookies.get(env.TOKEN_KEY.toString()) || '', // Ajoutez cette ligne
-    }),
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    user: null,
+    users: [],
+    isAuthenticated: !!useCookies().cookies.get(env.TOKEN_KEY.toString()),
+    token: useCookies().cookies.get(env.TOKEN_KEY.toString()) || '',
+  }),
 
   getters: {
     username(): string {
       return this.user?.username || '';
     },
 
-   isAdmin(): boolean {
-     return this.user?.role === 'admin' || false;
-   },
-   
-   employeId(): number | null {
-       const token = useCookies().cookies.get(env.TOKEN_KEY.toString());
-       if (!token) {
-           throw new Error('No authentication token found');
-       }
-       return this.user?.id || null;
-   }
+    isAdmin(): boolean {
+      return this.user?.role === 'admin' || false;
+    },
+
+    employeId(): number | null {
+      if (!this.token) {
+        throw new Error('No authentication token found');
+      }
+      return this.user?.id || null;
+    }
   },
 
   actions: {
@@ -43,7 +45,7 @@ export interface UserStore {
 
         const { cookies } = useCookies();
         cookies.set(env.TOKEN_KEY.toString(), response.data.token);
-        this.$patch({ user: response.data.user, isAuthenticated: true });
+        this.$patch({ user: response.data.user, isAuthenticated: true, token: response.data.token });
         await router.push(ROUTES.MAIN);
       } catch (error) {
         console.error('Erreur lors de la connexion:', (error as AxiosError).response?.data);
@@ -57,7 +59,7 @@ export interface UserStore {
 
         const { cookies } = useCookies();
         cookies.set(env.TOKEN_KEY.toString(), response.data.token);
-        this.$patch({ user: response.data.user, isAuthenticated: true });
+        this.$patch({ user: response.data.user, isAuthenticated: true, token: response.data.token });
         await router.push(ROUTES.MAIN);
       } catch (error) {
         console.error('Erreur lors de l\'inscription:', (error as AxiosError).response?.data);
@@ -92,7 +94,7 @@ export interface UserStore {
         const response = await axios.get<User[]>(`${env.BACKEND_BASE_URL}/api/users`);
 
         this.$patch({
-          user: response.data,
+          users: response.data,
         });
       } catch (error) {
         console.error('Erreur lors de la récupération des utilisateurs:', (error as AxiosError).response?.data);
@@ -100,11 +102,48 @@ export interface UserStore {
       }
     },
 
+    async fetchUser(id: number) {
+      try {
+        const response = await axios.get<User>(`${env.BACKEND_BASE_URL}/api/users/${id}`);
+
+        this.$patch({
+          user: response.data,
+        });
+      } catch (error) {
+        console.error('Erreur lors de la récupération de l\'utilisateur:', (error as AxiosError).response?.data);
+        throw error;
+      }
+    },
+
+    async updateUser(id: number, data: Partial<User>) {
+      try {
+        const response = await axios.put<User>(`${env.BACKEND_BASE_URL}/api/users/${id}`, data);
+
+        this.$patch({
+          user: response.data,
+        });
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de l\'utilisateur:', (error as AxiosError).response?.data);
+        throw error;
+      }
+    },
+
+    async deleteUser(id: number) {
+      try {
+        await axios.delete(`${env.BACKEND_BASE_URL}/api/users/${id}`);
+        this.$patch({
+          user: null,
+        });
+      } catch (error) {
+        console.error('Erreur lors de la suppression de l\'utilisateur:', (error as AxiosError).response?.data);
+        throw error;
+      }
+    },
+
     logout() {
       const { cookies } = useCookies();
       cookies.remove(env.TOKEN_KEY.toString());
-      this.user = null;
-      this.isAuthenticated = false;
+      this.$patch({ user: null, isAuthenticated: false, token: '' });
       router.push(ROUTES.SIGN_IN);
     }
   },

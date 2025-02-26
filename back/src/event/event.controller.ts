@@ -5,21 +5,25 @@ import {
   Param,
   Post,
   Put,
-  // UseGuards,
+  UseGuards,
 } from '@nestjs/common';
-// import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { CalendarEventService } from './event.service';
 import { Event } from './entities/event.entity';
 import { CreateEventDto } from './dto/create-event.dto';
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('events')
 export class CalendarEventController {
   constructor(private readonly calendarEventService: CalendarEventService) {}
 
-  @Post()
+  @Post('/absence')
   async createEvent(@Body() createEventDto: CreateEventDto): Promise<Event> {
-    return this.calendarEventService.createEvent(createEventDto);
+    try {
+      return await this.calendarEventService.createEvent(createEventDto);
+    } catch (error) {
+      throw new Error('Failed to create event');
+    }
   }
 
   @Get('date/:date')

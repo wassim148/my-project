@@ -1,20 +1,18 @@
-// import { Optional } from '@nestjs/common';
-import { IsNotEmpty, IsString, Max, Min } from 'class-validator';
+import { Optional } from '@nestjs/common';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateCongéeDto {
   @IsNotEmpty()
-  @IsString()
-  @Min(10000000)
-  @Max(99999999)
+  @IsNumber()
   numcin: number;
 
   @IsNotEmpty()
   @IsString()
-  dateDebut: Date;
+  startDate: Date;
 
   @IsNotEmpty()
   @IsString()
-  dateFin: Date;
+  endDate: Date;
 
   @IsNotEmpty()
   @IsString()
@@ -24,8 +22,6 @@ export class CreateCongéeDto {
   @IsString()
   raison: string;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // @Optional()
-  // piècesjustificatives: string;
+  @Optional()
+  piècesjustificatives: string;
 }

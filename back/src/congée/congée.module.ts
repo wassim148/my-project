@@ -6,13 +6,16 @@ import { Conge } from './entities/congée.entity';
 import { UsersModule } from 'src/users/users.module';
 import { WebsocketsModule } from 'src/webSockets/websockets.module';
 import { NotificationModule } from 'src/notification/notification.module';
+import { User } from 'src/users/entities/user.entities';
+import { EventModule } from 'src/event/event.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Conge]),
+    TypeOrmModule.forFeature([Conge, User]),
     UsersModule,
     WebsocketsModule,
     NotificationModule,
+    EventModule,
   ],
   controllers: [CongesController],
   providers: [CongesService],

@@ -9,10 +9,16 @@ import {
   Put,
   Req,
   UseGuards,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CongesService } from './congée.service';
 import { Conge } from './entities/congée.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateCongéeDto } from './dto/create-congée.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('conges')
@@ -30,9 +36,28 @@ export class CongesController {
   }
 
   @Post('creer')
-  async creerConge(@Req() req, @Body() createCongeDto: any) {
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const fileName = `${uuidv4()}-${file.originalname}`;
+          cb(null, fileName);
+        },
+      }),
+    }),
+  )
+  async creerConge(
+    @Req() req,
+    @Body() createCongeDto: CreateCongéeDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     const id = req.user.id;
     const user = req.user.username;
+    if (file) {
+      createCongeDto.piècesjustificatives = file.path;
+    }
+
     return this.congesService.creerConge(createCongeDto, id, user);
   }
 
@@ -44,6 +69,13 @@ export class CongesController {
   @Get('type/:typeConge')
   async getConges(@Param('typeConge') typeConge: string): Promise<Conge> {
     return this.congesService.getConges(typeConge);
+  }
+
+  @Get('historique/:employeId')
+  async getHistoriqueConges(
+    @Param('employeId') employeId: number,
+  ): Promise<Conge[]> {
+    return this.congesService.getHistoriqueConges(employeId);
   }
 
   @Put('/valider/:id')

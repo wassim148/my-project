@@ -24,7 +24,7 @@ import { FileModule } from './file/file.module';
       port: 3306,
       username: 'root',
       password: 'DDRVIKING147',
-      database: 'pfe',
+      database: 'conge',
       entities: [__dirname + '/**/*.entity.{ts,js}'],
       synchronize: true,
       autoLoadEntities: true,

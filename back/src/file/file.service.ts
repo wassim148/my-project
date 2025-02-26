@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
+import * as Minio from 'minio';
+import { MinioConfigService } from 'ninio.config';
 
 @Injectable()
 export class FileService {
-  create(createFileDto: CreateFileDto) {
-    return 'This action adds a new file';
+  private readonly minioClient: Minio.Client;
+
+  constructor(private readonly minioConfig: MinioConfigService) {
+    this.minioClient = this.minioConfig.getClient();
   }
 
-  findAll() {
-    return `This action returns all file`;
+  async createBucketIfNotExists(bucketName: string): Promise<void> {
+    const bucketExists = await this.minioClient.bucketExists(bucketName);
+    if (!bucketExists) {
+      await this.minioClient.makeBucket(bucketName, '');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} file`;
-  }
+  async uploadFile(
+    bucketName: string,
+    objectName: string,
+    file: Express.Multer.File,
+  ): Promise<string> {
+    await this.createBucketIfNotExists(bucketName);
 
-  update(id: number, updateFileDto: UpdateFileDto) {
-    return `This action updates a #${id} file`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} file`;
+    return new Promise((resolve, reject) => {
+      this.minioClient.putObject(
+        bucketName,
+        objectName,
+        file.buffer,
+        file.size,
+        (err, etag) => {
+          if (err) return reject(err);
+          resolve(`http://localhost:9000/${bucketName}/${objectName}`);
+        },
+      );
+    });
   }
 }

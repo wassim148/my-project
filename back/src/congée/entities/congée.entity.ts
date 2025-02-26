@@ -2,11 +2,11 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  // CreateDateColumn,
-  // UpdateDateColumn,
   ManyToOne,
+  OneToOne,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entities';
+import { File } from 'src/file/entities/file.entity';
 
 @Entity()
 export class Conge {
@@ -23,10 +23,10 @@ export class Conge {
   numcin: number;
 
   @Column({ type: 'date' })
-  dateDebut: Date;
+  startDate: Date;
 
   @Column({ type: 'date' })
-  dateFin: Date;
+  endDate: Date;
 
   @Column()
   typeConge: string;
@@ -38,20 +38,24 @@ export class Conge {
   })
   status: string;
 
-  // @CreateDateColumn()
-  // createdAt: Date;
-
-  // @UpdateDateColumn()
-  // updatedAt: Date;
-  // @Column()
-  // dateHeure: string;
+  @Column({ nullable: true })
+  approvalDate: Date;
 
   @Column()
   raison: string;
 
-  // @Column({ nullable: true })
-  // piècesjustificatives?: string;
+  @Column({ default: 'waiting' })
+  approvalStatus: string;
+
+  @Column({ default: 0 })
+  nombreJours: number;
+
+  @OneToOne(() => File, (file) => file.conge)
+  file: File;
 
   @ManyToOne(() => User, (user) => user.conges)
   user: User;
+
+  @ManyToOne(() => User, (user) => user.conges)
+  employe: User;
 }

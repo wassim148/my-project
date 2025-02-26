@@ -14,17 +14,15 @@ export class CalendarEventService {
   async createEvent(createEventDto: CreateEventDto): Promise<Event> {
     const { description, date, userId } = createEventDto;
 
-    // Ensure the date is valid
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
       throw new Error('Invalid date format');
     }
 
-    // Create and save the event
     const event = this.eventRepository.create({
       description,
       date: parsedDate,
-      user: { id: userId }, // Assuming userId is passed in the DTO
+      user: { id: userId },
     });
 
     return this.eventRepository.save(event);

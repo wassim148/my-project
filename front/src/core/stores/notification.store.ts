@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios';
 import { env } from '../constants';
+import { useToast } from '@/shared/components/ui/toast';
 
 export const useNotificationStore = defineStore('notification', {
   state: () => ({

@@ -29,7 +29,7 @@ const variant = {
 
 <template>
     <div class="flex flex-row pl-4 space-x-2">
-        <div>
+        <div class="shrink-0">
             <div v-if="props.type == 'demande'" class="rounded-md p-1">
                 <TooltipProvider>
                     <Tooltip>
@@ -50,9 +50,10 @@ const variant = {
                 <Icon icon="ph:exclamation-mark" class="w-6 h-6"></Icon>
             </div>
         </div>
-        <div class="font-normal space-y-2 font-sans text-sm !text-ellipsis whitespace-nowrap overflow-hidden">
+        <div class="flex flex-col space-y-2 font-sans text-sm !text-ellipsis whitespace-nowrap overflow-hidden">
             {{ props.message }}
             <div class="text-accent-foreground/65">{{ props.time }}</div>
         </div>
     </div>
 </template>
+

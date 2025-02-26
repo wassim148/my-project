@@ -20,7 +20,7 @@
             <td class="p-2">{{ request.username }}</td>
             <td class="p-2">{{ request.typeConge }}</td>
             <td class="p-2">
-              {{ formatDate(request.dateDebut) }} - {{ formatDate(request.dateFin) }}
+              {{ formatDate(request.startDate) }} - {{ formatDate(request.endDate) }}
             </td>
             <td class="p-2">
               <span

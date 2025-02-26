@@ -22,9 +22,39 @@ import {
 } from '@components/ui/command'
 import StarButton from '@components/Buttons/StarButton.vue'
 import ToggleDarkModeButton from '@components/Buttons/ToggleDarkModeButton.vue'
+import useUserStore from '@/core/stores/user.store'
+import { defineModel, ref, computed, onMounted } from 'vue'
 
 const isLeftSidebarCollapsed = defineModel('isLeftSidebarCollapsed', { required: true, type: Boolean })
 const isRightSidebarCollapsed = defineModel('isRightSidebarCollapsed', { required: true, type: Boolean })
+
+const employees = ref([])
+const userStore = useUserStore()
+
+const fetchEmployees = async () => {
+  try {
+    await userStore.fetchUsers()
+    employees.value = userStore.$state.users
+  } catch (error) {
+    console.error('Error fetching employees:', error)
+  }
+}
+
+const query = ref('')
+const filteredEmployees = computed(() =>
+    employees.value.filter((employee) =>
+        employee.username.toLowerCase().includes(query.value.toLowerCase()) ||
+        // employee.department.toLowerCase().includes(query.value.toLowerCase()) ||
+        employee.role.toLowerCase().includes(query.value.toLowerCase())
+    )
+)
+
+const selectEmployee = (employee) => {
+    query.value = employee.name
+}
+
+onMounted(fetchEmployees)
+
 </script>
 
 <template>
@@ -39,7 +69,7 @@ const isRightSidebarCollapsed = defineModel('isRightSidebarCollapsed', { require
             <Breadcrumb class="hidden md:flex item-center">
                 <BreadcrumbList>
                     <BreadcrumbItem>
-                        <BreadcrumbLink> Dashboards </BreadcrumbLink>
+                        <BreadcrumbLink> {{ $route.meta.title }} Dachboard</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
@@ -52,41 +82,28 @@ const isRightSidebarCollapsed = defineModel('isRightSidebarCollapsed', { require
             <Command class="bg-accent rounded-lg border justify-center">
                 <Popover>
                     <PopoverTrigger>
-                        <CommandInput placeholder="search" />
+                        <CommandInput v-model="query" placeholder="Search employees..." />
                     </PopoverTrigger>
                     <PopoverContent>
                         <CommandList>
-                            <CommandEmpty>No results found.</CommandEmpty>
-                            <CommandGroup heading="Suggestions">
-                                <CommandItem value="Calendar">
-                                    <span>Calendar</span>
-                                </CommandItem>
-                                <CommandItem value="Search Emoji">
-                                    <span>Search Emoji</span>
-                                </CommandItem>
-                                <CommandItem value="Calculator">
-                                    <span>Calculator</span>
-                                </CommandItem>
-                            </CommandGroup>
-                            <CommandSeparator />
-                            <CommandGroup heading="Settings">
-                                <CommandItem value="Profile">
-                                    <span>Profile</span>
-                                    <CommandShortcut>⌘P</CommandShortcut>
-                                </CommandItem>
-                                <CommandItem value="Billing">
-                                    <span>Billing</span>
-                                    <CommandShortcut>⌘B</CommandShortcut>
-                                </CommandItem>
-                                <CommandItem value="Settings">
-                                    <span>Settings</span>
-                                    <CommandShortcut>⌘S</CommandShortcut>
+                            <CommandEmpty>No employees found.</CommandEmpty>
+                            <CommandGroup heading="Employees">
+                                <CommandItem
+                                    v-for="employee in filteredEmployees"
+                                    :key="employee.id"
+                                    @click="() => selectEmployee(employee)"
+                                >
+                                    <span>{{ employee.username }} 
+                                        <!-- ({{ employee.department }}) -->
+                                    </span>
+                                    <CommandShortcut>{{ employee.role }}</CommandShortcut>
                                 </CommandItem>
                             </CommandGroup>
                         </CommandList>
                     </PopoverContent>
                 </Popover>
             </Command>
+
             <div class="flex">
                 <ToggleDarkModeButton />
                 <Button
@@ -104,4 +121,9 @@ const isRightSidebarCollapsed = defineModel('isRightSidebarCollapsed', { require
         </div>
     </div>
 </template>
-<style scoped></style>
+
+<style scoped>
+.rotate-180 {
+    transform: rotate(180deg);
+}
+</style>

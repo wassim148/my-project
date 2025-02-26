@@ -46,7 +46,7 @@ export class PointageService {
   async generateLeaveReport(year: number, employeId: number): Promise<any> {
     const leaves = await this.congesService.getTousLesConges(employeId);
     return leaves.filter((leave) => {
-      const date = new Date(leave.dateDebut);
+      const date = new Date(leave.startDate);
       return date.getFullYear() === year;
     });
   }
@@ -54,7 +54,7 @@ export class PointageService {
     // Récupérer tous les congés approuvés de l'employé
     const conges = await this.congeRepository.find({
       where: { id, status: 'waiting' },
-      order: { dateDebut: 'ASC' },
+      order: { startDate: 'ASC' },
     });
 
     // Générer le calendrier avec les jours travaillés et les congés
@@ -64,7 +64,7 @@ export class PointageService {
 
     for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
       const isHoliday = conges.some(
-        (c) => new Date(c.dateDebut) <= d && d <= new Date(c.dateFin),
+        (c) => new Date(c.startDate) <= d && d <= new Date(c.endDate),
       );
 
       calendar.push({

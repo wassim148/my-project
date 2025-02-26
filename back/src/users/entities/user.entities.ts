@@ -6,6 +6,7 @@ import { Notification } from 'src/notification/entities/notification.entity';
 import { Role } from 'src/auth/enums/role.enum';
 import { Event } from 'src/event/entities/event.entity';
 import { LeaveRequest } from 'src/leave-request/entities/leave-request.entity';
+import { File } from 'src/file/entities/file.entity';
 
 @Entity()
 export class User {
@@ -54,6 +55,9 @@ export class User {
   @Column({ nullable: true })
   profession: string;
 
+  @Column({ default: 45 })
+  leaveBalance: number;
+
   @OneToMany(() => Notification, (notifications) => notifications.user, {
     eager: true,
   })
@@ -70,4 +74,7 @@ export class User {
 
   @OneToMany(() => LeaveRequest, (leaveRequest) => leaveRequest.user)
   leaveRequests: LeaveRequest[];
+
+  @OneToMany(() => File, (file) => file.user)
+  files: File;
 }

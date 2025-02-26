@@ -4,9 +4,15 @@ export class CreateEventDto {
   @IsString()
   description: string;
 
+  @IsNumber()
+  date: number;
+
   @IsDate()
-  date: Date;
+  startDate: Date;
+
+  @IsDate()
+  endDate: Date;
 
   @IsNumber()
-  userId: number; // The ID of the user creating the event
+  userId: number;
 }

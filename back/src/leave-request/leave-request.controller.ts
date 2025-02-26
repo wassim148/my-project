@@ -6,9 +6,11 @@ import {
   Delete,
   Body,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { LeaveRequestService } from './leave-request.service';
 import { LeaveRequest } from './entities/leave-request.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('/leave-requests')
 export class LeaveRequestController {
@@ -37,5 +39,31 @@ export class LeaveRequestController {
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return this.leaveRequestService.delete(+id);
+  }
+
+  @UseGuards(AuthGuard('jwt')) // Protection par authentification JWT
+  @Post('request')
+  async createLeaveRequest(
+    @Body('userId') userId: number,
+    @Body('startDate') startDate: Date,
+    @Body('endDate') endDate: Date,
+  ) {
+    return this.leaveRequestService.createLeaveRequest(
+      userId,
+      startDate,
+      endDate,
+    );
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('approve/:id')
+  async approveLeaveRequest(@Param('id') leaveRequestId: number) {
+    return this.leaveRequestService.approveLeaveRequest(leaveRequestId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('history/:userId')
+  async getLeaveHistory(@Param('userId') userId: number) {
+    return this.leaveRequestService.getLeaveHistory(userId);
   }
 }

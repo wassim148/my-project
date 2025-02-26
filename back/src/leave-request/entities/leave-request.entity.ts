@@ -9,14 +9,17 @@ export class LeaveRequest {
   @Column()
   employee: string;
 
-  @Column()
-  type: string;
+  // @Column()
+  // startDate: Date;
 
-  @Column()
-  period: string;
+  // @Column()
+  // endDate: Date;
 
-  @Column({ default: 'En attente' })
-  status: string;
+  // @Column({ default: 'waiting' })
+  // status: string;
+
+  // @Column({ nullable: true })
+  // approvalDate: Date;
 
   @ManyToOne(() => User, (user) => user.leaveRequests)
   user: User;

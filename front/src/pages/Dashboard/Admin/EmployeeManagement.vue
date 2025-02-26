@@ -12,10 +12,10 @@
       </thead>
       <tbody>
         <tr v-for="(employee, index) in employees" :key="index" class="border-b">
-          <td class="p-2">{{ UserStore.$state.user.username }}</td>
-          <td class="p-2">{{ UserStore.$state.user.email }}</td>
-          <td class="p-2">{{ UserStore.$state.user.role }}</td>
-          <td class="p-2">
+          <td class="p-2">{{ employee.username }}</td>
+          <td class="p-2">{{ employee.email }}</td>
+          <td class="p-2">{{ employee.role }}</td>
+          <td class="p-2 flex gap-2">
             <button class="sl-button sl-button--primary" @click="editEmployee(employee.id)">Éditer</button>
             <button class="sl-button sl-button--danger" @click="deleteEmployee(employee.id)">Supprimer</button>
           </td>
@@ -26,33 +26,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import useUserStore from '@/core/stores/user.store'
 
-const UserStore=useUserStore()
+const router = useRouter()
 const employees = ref([])
+const userStore = useUserStore()
 
-async function fetchEmployees() {
+const fetchEmployees = async () => {
   try {
-    const response = await axios.get('/admin/employees')
-    employees.value = response.data
+    await userStore.fetchUsers()
+    employees.value = userStore.$state.users
   } catch (error) {
-    console.error('Failed to fetch employees:', error)
+    console.error('Error fetching employees:', error)
   }
 }
 
 function editEmployee(id: number) {
-  console.log('Edit employee with id:', id)
-  // Add your edit logic here
+  // Navigate to the employee edit page
+  router.push(`/edit-employee/${id}`);
 }
 
-function deleteEmployee(id: number) {
-  console.log('Delete employee with id:', id)
-  // Add your delete logic here
+async function deleteEmployee(id: number) {
+  try {
+    await userStore.deleteUser(id);
+    employees.value = employees.value.filter(employee => employee.id !== id);
+    console.log('Employee deleted successfully.');
+  } catch (error) {
+    console.error('Error deleting employee:', error);
+  }
 }
 
 onMounted(fetchEmployees)
 </script>
-
 

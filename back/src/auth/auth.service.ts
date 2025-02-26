@@ -6,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entities';
 import { Repository } from 'typeorm';
-// import { IAuthentication } from './types/Role';
 import { AuthenticationDto } from './dto/authentication.dto';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { comparePassword } from 'src/Utils/bcrypt';
