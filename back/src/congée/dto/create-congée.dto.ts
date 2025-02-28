@@ -1,5 +1,5 @@
 import { Optional } from '@nestjs/common';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateCongéeDto {
   @IsNotEmpty()
@@ -7,7 +7,7 @@ export class CreateCongéeDto {
   numcin: number;
 
   @IsNotEmpty()
-  @IsString()
+  // @IsDate()
   startDate: Date;
 
   @IsNotEmpty()

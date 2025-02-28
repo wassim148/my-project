@@ -35,12 +35,61 @@ export class CongesService {
     return Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1; // Inclusif
   }
 
+  // async creerConge(
+  //   createCongeDto: CreateCongéeDto,
+  //   id: number,
+  //   user: string,
+  // ): Promise<Conge> {
+  //   try {
+  //     const conge = this.congeRepository.create({
+  //       ...createCongeDto,
+  //       employeId: id,
+  //       username: user,
+  //       nombreJours: this.calculateDaysBetweenDates(
+  //         createCongeDto.startDate,
+  //         createCongeDto.endDate,
+  //       ),
+  //     });
+  //     console.log(conge);
+  //     if (!conge) {
+  //       throw new NotFoundException(`Leave with id ${id} not found`);
+  //     }
+  //     if (conge.typeConge === 'annual' || conge.typeConge === 'Sans solde') {
+  //       if (status === 'accepted') {
+  //         if (conge.nombreJours > conge.employe.leaveBalance) {
+  //           throw new Error('Insufficient leave balance for this request');
+  //         }
+  //         conge.employe.leaveBalance -= conge.nombreJours;
+  //         await this.userRepository.save(conge.employe);
+  //       }
+  //     }
+  //     const event = await this.calendarEventService.createEvent({
+  //       description: `Congé ${conge.typeConge} du ${conge.startDate} au ${conge.endDate}`,
+  //       startDate: conge.startDate,
+  //       endDate: conge.endDate,
+  //       userId: conge.employeId,
+  //       date: conge.nombreJours,
+  //     });
+  //     const savedConge = await this.congeRepository.save(conge);
+  //     this.websocketGateway.server.emit('conge_created', savedConge);
+  //     return savedConge;
+  //   } catch (error) {
+  //     console.error(error);
+  //     throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+  //   }
+  // }
+
   async creerConge(
     createCongeDto: CreateCongéeDto,
     id: number,
     user: string,
   ): Promise<Conge> {
     try {
+      const employe = await this.userRepository.findOne({ where: { id } });
+      if (!employe) {
+        throw new NotFoundException(`User with id ${id} not found`);
+      }
+
       const conge = this.congeRepository.create({
         ...createCongeDto,
         employeId: id,
@@ -50,27 +99,35 @@ export class CongesService {
           createCongeDto.endDate,
         ),
       });
-      if (!conge) {
-        throw new NotFoundException(`Leave with id ${id} not found`);
-      }
-      if (conge.typeConge === 'annual' || conge.typeConge === 'Sans solde') {
-        if (status === 'accepted') {
-          if (conge.nombreJours > conge.employe.leaveBalance) {
-            throw new Error('Insufficient leave balance for this request');
-          }
-          conge.employe.leaveBalance -= conge.nombreJours;
-          await this.userRepository.save(conge.employe);
+
+      // Vérification du solde de congé
+      if (
+        createCongeDto.typeConge === 'annual' ||
+        createCongeDto.typeConge === 'Sans solde'
+      ) {
+        if (conge.nombreJours > employe.leaveBalance) {
+          throw new Error('Insufficient leave balance for this request');
         }
       }
+
+      // Création de l'événement calendrier
       const event = await this.calendarEventService.createEvent({
-        description: `Congé ${conge.typeConge} du ${conge.startDate.toLocaleDateString()} au ${conge.endDate.toLocaleDateString()}`,
-        startDate: conge.startDate,
-        endDate: conge.endDate,
-        userId: conge.employeId,
+        description: `Congé ${createCongeDto.typeConge} du ${createCongeDto.startDate} au ${createCongeDto.endDate}`,
+        startDate: createCongeDto.startDate,
+        endDate: createCongeDto.endDate,
+        userId: id,
         date: conge.nombreJours,
       });
+
+      // Sauvegarde du congé
       const savedConge = await this.congeRepository.save(conge);
-      this.websocketGateway.server.emit('conge_created', savedConge);
+
+      // Mise à jour du solde de congé si accepté
+      if (savedConge.status === 'accepted') {
+        employe.leaveBalance -= conge.nombreJours;
+        await this.userRepository.save(employe);
+      }
+
       return savedConge;
     } catch (error) {
       console.error(error);

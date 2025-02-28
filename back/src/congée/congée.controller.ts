@@ -11,19 +11,25 @@ import {
   UseGuards,
   UploadedFile,
   UseInterceptors,
+  // HttpException,
+  // HttpStatus,
 } from '@nestjs/common';
 import { CongesService } from './congée.service';
 import { Conge } from './entities/congée.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
-import { diskStorage } from 'multer';
+// import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateCongéeDto } from './dto/create-congée.dto';
+import { FileService } from 'src/file/file.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('conges')
 export class CongesController {
-  constructor(private readonly congesService: CongesService) {}
+  constructor(
+    private readonly congesService: CongesService,
+    private readonly fileService: FileService,
+  ) {}
 
   // @Post('pointage')
   // async pointageConge(@Body() PointageDto: any): Promise<Conge> {
@@ -36,17 +42,7 @@ export class CongesController {
   }
 
   @Post('creer')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const fileName = `${uuidv4()}-${file.originalname}`;
-          cb(null, fileName);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file'))
   async creerConge(
     @Req() req,
     @Body() createCongeDto: CreateCongéeDto,
@@ -54,17 +50,67 @@ export class CongesController {
   ) {
     const id = req.user.id;
     const user = req.user.username;
+
     if (file) {
-      createCongeDto.piècesjustificatives = file.path;
+      try {
+        // Générer un nom unique pour le fichier
+        const fileName = `${uuidv4()}-${file.originalname}`;
+        const fileUrl = await this.fileService.uploadFile(
+          'conges',
+          fileName,
+          file.buffer,
+        );
+
+        // Stocker l'URL MinIO dans le DTO
+        createCongeDto.piècesjustificatives = fileUrl;
+      } catch (error) {
+        throw new Error('Failed to upload file to MinIO');
+      }
     }
 
     return this.congesService.creerConge(createCongeDto, id, user);
   }
 
-  @Get(':id')
-  async getConge(@Param('id') id: number): Promise<Conge> {
-    return this.congesService.getConge(id);
-  }
+  // @Post('creer')
+  // @UseInterceptors(
+  //   FileInterceptor('file', {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //       filename: (req, file, cb) => {
+  //         const fileName = `${uuidv4()}-${file.originalname}`;
+  //         cb(null, fileName);
+  //       },
+  //     }),
+  //     fileFilter: (req, file, cb) => {
+  //       if (!file.mimetype.match(/pdf|jpg|jpeg|png/)) {
+  //         return cb(
+  //           new Error('Only PDF, JPG, JPEG, and PNG files are allowed'),
+  //           false,
+  //         );
+  //       }
+  //       cb(null, true);
+  //     },
+  //     limits: { fileSize: 5 * 1024 * 1024 }, // Limite à 5MB
+  //   }),
+  // )
+  // async creerConge(
+  //   @Req() req,
+  //   @Body() createCongeDto: CreateCongéeDto,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   const id = req.user.id;
+  //   const user = req.user.username;
+
+  //   if (file) {
+  //     createCongeDto.piècesjustificatives = file.path; // Stocker le chemin local du fichier
+  //   }
+
+  //   try {
+  //     return await this.congesService.creerConge(createCongeDto, id, user);
+  //   } catch (error) {
+  //     throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+  //   }
+  // }
 
   @Get('type/:typeConge')
   async getConges(@Param('typeConge') typeConge: string): Promise<Conge> {

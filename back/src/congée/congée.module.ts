@@ -8,6 +8,8 @@ import { WebsocketsModule } from 'src/webSockets/websockets.module';
 import { NotificationModule } from 'src/notification/notification.module';
 import { User } from 'src/users/entities/user.entities';
 import { EventModule } from 'src/event/event.module';
+import { FileService } from 'src/file/file.service';
+import { MinioConfigService } from 'ninio.config';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { EventModule } from 'src/event/event.module';
     EventModule,
   ],
   controllers: [CongesController],
-  providers: [CongesService],
+  providers: [CongesService, FileService, MinioConfigService],
   exports: [CongesService],
 })
 export class CongéeModule {}

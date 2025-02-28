@@ -32,19 +32,31 @@ const employees = ref([])
 const userStore = useUserStore()
 
 const fetchEmployees = async () => {
-  try {
-    await userStore.fetchUsers()
-    employees.value = userStore.$state.users
-  } catch (error) {
-    console.error('Error fetching employees:', error)
-  }
+    try {
+        await userStore.fetchUsers()
+        await filterEmployees({ target: { value: '' } })
+        employees.value = userStore.$state.users
+    } catch (error) {
+        console.error('Error fetching employees:', error)
+    }
+}
+
+const filterEmployees = (e) => {
+    const query = e.target.value.toLowerCase()
+    if (query) {
+        employees.value = userStore.$state.users.filter((user) =>
+            user.username.toLowerCase().includes(query)
+        )
+    } else {
+        employees.value = userStore.$state.users
+    }
 }
 
 const query = ref('')
 const filteredEmployees = computed(() =>
     employees.value.filter((employee) =>
         employee.username.toLowerCase().includes(query.value.toLowerCase()) ||
-        // employee.department.toLowerCase().includes(query.value.toLowerCase()) ||
+        employee.department.toLowerCase().includes(query.value.toLowerCase()) ||
         employee.role.toLowerCase().includes(query.value.toLowerCase())
     )
 )
@@ -94,7 +106,7 @@ onMounted(fetchEmployees)
                                     @click="() => selectEmployee(employee)"
                                 >
                                     <span>{{ employee.username }} 
-                                        <!-- ({{ employee.department }}) -->
+                                        ({{ employee.department }})
                                     </span>
                                     <CommandShortcut>{{ employee.role }}</CommandShortcut>
                                 </CommandItem>
@@ -127,3 +139,4 @@ onMounted(fetchEmployees)
     transform: rotate(180deg);
 }
 </style>
+
