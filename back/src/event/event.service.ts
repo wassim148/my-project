@@ -64,7 +64,7 @@ export class CalendarEventService {
       where: { id: eventId },
     });
     if (!event) throw new Error('Événement introuvable.');
-    event.checkInTime = new Date();
+    event.starDate = new Date();
     return this.eventRepository.save(event);
   }
 
@@ -73,9 +73,9 @@ export class CalendarEventService {
       where: { id: eventId },
     });
     if (!event) throw new Error('Événement introuvable.');
-    if (!event.checkInTime)
+    if (!event.starDate)
       throw new Error("Veuillez effectuer un check-in d'abord.");
-    event.checkOutTime = new Date();
+    event.endDate = new Date();
     return this.eventRepository.save(event);
   }
 

@@ -110,7 +110,6 @@ export class CongesService {
         }
       }
 
-      // Création de l'événement calendrier
       const event = await this.calendarEventService.createEvent({
         description: `Congé ${createCongeDto.typeConge} du ${createCongeDto.startDate} au ${createCongeDto.endDate}`,
         startDate: createCongeDto.startDate,
@@ -118,6 +117,10 @@ export class CongesService {
         userId: id,
         date: conge.nombreJours,
       });
+
+      if (event) {
+        this.websocketGateway.server.emit('event_created', event);
+      }
 
       // Sauvegarde du congé
       const savedConge = await this.congeRepository.save(conge);

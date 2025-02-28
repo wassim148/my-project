@@ -15,6 +15,7 @@ import { PointageModule } from './pointage/pointage.module';
 import { EventModule } from './event/event.module';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
 import { FileModule } from './file/file.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { FileModule } from './file/file.module';
     EventModule,
     LeaveRequestModule,
     FileModule,
+    HistoryModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, WebsocketsModule],

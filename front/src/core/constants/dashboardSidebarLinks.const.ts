@@ -39,7 +39,13 @@ const sidebarNavigation: SideBarProps['config'] = [
                 label: 'Employe',
                 to: 'Employeemanagemt',
                 icon: 'ph:user'
-            }
+            },
+            {
+                type: 'button',
+                label: 'History',
+                to: 'History',
+                icon: 'ph:history-duotone'
+            },
         ],
     },
 ]

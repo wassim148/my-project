@@ -59,6 +59,10 @@ export const router = createRouter({
                 {
                     ...DASHBOARD_ROUTES.EMPLOYEE_MANAGEMENT,
                     component: () => import('@/pages/Dashboard/Admin/EmployeeManagement.vue')
+                },
+                {
+                    ...DASHBOARD_ROUTES.HESTORY,
+                    component: () => import('@/pages/Dashboard/Admin/History.vue')
                 }
             ],
         },

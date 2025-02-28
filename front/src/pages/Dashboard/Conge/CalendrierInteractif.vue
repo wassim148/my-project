@@ -15,9 +15,9 @@
             {{ event.description }}
           </span>
           <div>
-            <sl-button variant="success" @click="handleCheckIn(event.id)" v-if="!event.checkInTime">Check-in</sl-button>
+            <sl-button variant="success" @click="handleCheckIn(event.id)" v-if="!event.startDate">Check-in</sl-button>
             <sl-button variant="danger" @click="handleCheckOut(event.id)"
-              v-if="!event.checkOutTime && event.checkInTime">
+              v-if="!event.evdDate && event.startDate">
               Check-out
             </sl-button>
           </div>

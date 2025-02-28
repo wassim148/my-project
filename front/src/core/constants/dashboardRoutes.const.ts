@@ -5,6 +5,7 @@ export const DASHBOARD_ROUTES = {
   DEMANDES_CONGE: { name: 'DemandesDeConge', path: '/DemandesDeConge' },
   SETTINGS: { name: 'Settings', path: '/Settings' },
   ADMIN_DASHBOARD: { name: 'AdminDashboard', path: '/AdminDashboard' },
-  EMPLOYEE_MANAGEMENT: { name: 'Employeemanagemt', path: '/Employeemanagemt'}
+  EMPLOYEE_MANAGEMENT: { name: 'Employeemanagemt', path: '/Employeemanagemt'},
+  HESTORY: { name: 'History', path: '/History' },
 };
 

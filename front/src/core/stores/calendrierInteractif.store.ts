@@ -19,8 +19,8 @@ export const useCalendarEventStore = defineStore('calendarEvent', {
         const response = await window.$axios.get<any[]>(`${env.BACKEND_BASE_URL}/api/events/date/${this.formattedSelectedDate}`);
         this.events = response.data.map((event) => ({
           ...event,
-          checkInTime: event.checkInTime ? new Date(event.checkInTime) : null,
-          checkOutTime: event.checkOutTime ? new Date(event.checkOutTime) : null,
+          startDate: event.startDate ? new Date(event.startDate) : null,
+          evdDate: event.evdDate ? new Date(event.evdDate) : null,
         }));
       } catch (error) {
         console.error('Erreur lors de la récupération des événements :', error);
@@ -58,8 +58,8 @@ export const useCalendarEventStore = defineStore('calendarEvent', {
           dateDebut: new Date(response.data.dateDebut),
           dateFin: new Date(response.data.dateFin),
           status: response.data.status,
-          checkInTime: null,
-          checkOutTime: null,
+          startDate: null,
+          evdDate: null,
         });
       } catch (error) {
         console.error('Erreur lors de la création de l\'absence :', error);

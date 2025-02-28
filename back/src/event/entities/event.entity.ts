@@ -13,10 +13,10 @@ export class Event {
   date: Date;
 
   @Column({ nullable: true })
-  checkInTime: Date;
+  starDate: Date;
 
   @Column({ nullable: true })
-  checkOutTime: Date;
+  endDate: Date;
 
   @ManyToOne(() => User, (user) => user.events)
   user: User;

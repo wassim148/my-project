@@ -2,7 +2,6 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-center mb-6">Gestion des congés</h1>
         <form @submit.prevent="envoyerDemande" class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto mb-8">
-            <!-- NUM CIN Field -->
             <label for="numCIN" class="block text-sm font-medium text-gray-700 mb-2">NUM CIN :</label>
             <input
                 v-model.number="demande.numcin"
@@ -13,7 +12,6 @@
             />
             <p v-if="!errors.numcin" class="text-red-500 text-sm mt-1">{{ errors.numcin }}</p>
 
-            <!-- Type de Congé Field -->
             <label for="typeConge" class="block text-sm font-medium text-gray-700 mt-4 mb-2">Type de congé :</label>
             <select
                 v-model="demande.typeConge"
@@ -25,7 +23,6 @@
                 <option value="sans solde">Sans solde</option>
             </select>
 
-            <!-- Date Début Field -->
             <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Date début :</label>
             <input
                 v-model="demande.startDate"
@@ -34,7 +31,6 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
 
-            <!-- Date Fin Field -->
             <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">Date fin :</label>
             <input
                 v-model="demande.endDate"
@@ -43,7 +39,6 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
 
-            <!-- Description Field -->
             <div class="mb-4">
                 <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">Description (raison) :</label>
                 <textarea
@@ -54,7 +49,6 @@
                 ></textarea>
             </div>
 
-            <!-- Justificatif Field (if typeConge is 'maladie') -->
             <div v-if="demande.typeConge === 'maladie'" class="mb-4">
                 <label for="justificatif" class="block text-sm font-medium text-gray-700 mb-2">Pièce(s) justificative(s) :</label>
                 <input
