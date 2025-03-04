@@ -100,7 +100,6 @@ export class CongesService {
         ),
       });
 
-      // Vérification du solde de congé
       if (
         createCongeDto.typeConge === 'annual' ||
         createCongeDto.typeConge === 'Sans solde'
@@ -117,15 +116,10 @@ export class CongesService {
         userId: id,
         date: conge.nombreJours,
       });
-
       if (event) {
         this.websocketGateway.server.emit('event_created', event);
       }
-
-      // Sauvegarde du congé
       const savedConge = await this.congeRepository.save(conge);
-
-      // Mise à jour du solde de congé si accepté
       if (savedConge.status === 'accepted') {
         employe.leaveBalance -= conge.nombreJours;
         await this.userRepository.save(employe);

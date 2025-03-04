@@ -1,20 +1,20 @@
 <script lang="ts" setup>
-import { useMachineStore } from '@/core/stores'
+import { useUserStore } from '@/core/stores/user.store'
 import Button from '@components/ui/button/Button.vue'
 import { Icon } from '@iconify/vue'
-import { Machine } from '../columns'
+import { User } from '../columns'
 import { DeleteProps } from '@/shared/interfaces/table'
 
-const props = defineProps<DeleteProps<Machine>>()
+const props = defineProps<DeleteProps<User>>()
 
-const machineStore = useMachineStore()
+const UserStore = useUserStore()
 </script>
 
 <template>
     <Button
         variant="ghost"
         size="icon"
-        @click="machineStore.bulkDeleteMachine(props.table.getSelectedRowModel().rows.map((row) => row.original))"
+        @click="UserStore.deleteUsers(props.table.getSelectedRowModel().rows.map((row) => row.original))"
     >
         <Icon icon="ph:trash" class="text-destructive" />
     </Button>

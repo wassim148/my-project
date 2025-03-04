@@ -5,26 +5,24 @@ import Separator from '@components/ui/separator/Separator.vue'
 import Search from './DataTableColumnActions/Search.vue'
 import { computed, defineAsyncComponent, ref } from 'vue'
 import { Table } from '@tanstack/vue-table'
-import { Machine } from './columns'
+import { User } from './columns'
 import DataTableViewOptions from './DataTableViewOptions.vue'
 import Delete from './DataTableColumnActions/Delete.vue'
-import Copy from './DataTableColumnActions/Copy.vue'
-import Sort from './DataTableColumnActions/Sort.vue'
-import { useMachineStore } from '@/core/stores'
+import useUserStore from '@/core/stores/user.store'
 interface DataTableToolbarProps {
-    table: Table<Machine>
+    table: Table<User>
     copyKey: string
 }
-const Create = defineAsyncComponent(() => import('./DataTableColumnActions/Create.vue'))
+// const Create = defineAsyncComponent(() => import('./DataTableColumnActions/Create.vue'))
 
-const machinesStore = useMachineStore()
+const UsersStore = useUserStore()
 const refetchData = async () => {
     isLoading.value = true
-    await machinesStore.getMachines({})
+    await UsersStore.getUsers({})
     isLoading.value = false
 }
 const props = defineProps<DataTableToolbarProps>()
-const columnNames: (keyof Machine)[] = ['description', 'name', 'quantity', 'price'] as const
+const columnNames: (keyof User)[] = [ 'username', 'email', 'role', 'profission'] as const
 const isFiltered = computed(() => props.table.getState().columnFilters.length > 0)
 const isLoading = ref<Boolean>(false)
 </script>

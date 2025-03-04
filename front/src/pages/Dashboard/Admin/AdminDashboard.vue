@@ -110,7 +110,6 @@ const fetchLeaveRequests = async () => {
   }
 };
 
-// Appel automatique au montage
 onMounted(fetchLeaveRequests);
 </script>
 

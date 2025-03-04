@@ -3,15 +3,15 @@ import { onMounted } from 'vue'
 import { columns } from './columns'
 import DataTable from './data-table.vue'
 import { storeToRefs } from 'pinia'
-import { useMachineStore } from '@/core/stores'
+import useUserStore from '@/core/stores/user.store'
 
-const machineStore = useMachineStore()
-const { machines } = storeToRefs(machineStore)
+const userStore = useUserStore()
+const { users } = storeToRefs(userStore)
 onMounted(async () => {
-    await machineStore.getMachines({})
+    await userStore.fetchUsers({})
 })
 </script>
 
 <template>
-    <DataTable :columns="columns" :data="machines" />
+    <DataTable :columns="columns" :data="users" />
 </template>

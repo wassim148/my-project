@@ -11,10 +11,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@components/ui/dropdown-menu'
-import type { Machine } from './columns'
+import type { User } from './columns'
 
 interface DataTableViewOptionsProps {
-    table: Table<Machine>
+    table: Table<User>
 }
 
 const props = defineProps<DataTableViewOptionsProps>()

@@ -129,7 +129,7 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     await userStore.login(values);
     alert('Login successful!');
-    window.location.href = '/DemandesDeConge'; 
+    window.location.href = '/'; 
   } catch (error) {
     console.error(error);
     alert('An error occurred while logging in.');

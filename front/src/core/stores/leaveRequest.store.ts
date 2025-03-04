@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
 import { env } from '../constants';
 import { LeaveRequest } from '@/shared/interfaces/LeaveRequest';
-import { Console } from 'console';
 
 
 

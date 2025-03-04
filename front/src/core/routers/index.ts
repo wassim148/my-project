@@ -42,7 +42,7 @@ export const router = createRouter({
                 },
                 {
                     ...DASHBOARD_ROUTES.TABLEAU_SUIVI,
-                    component: () => import('@pages/Dashboard/Conge/TableauSuivi.vue'),
+                    component: () => import('@/pages/Dashboard/Admin/TableauSuivi.vue'),
                 },
                 {
                     ...DASHBOARD_ROUTES.CALENDRIER_INTERACTIF,
@@ -63,7 +63,15 @@ export const router = createRouter({
                 {
                     ...DASHBOARD_ROUTES.HESTORY,
                     component: () => import('@/pages/Dashboard/Admin/History.vue')
-                }
+                },
+                {
+                    ...DASHBOARD_ROUTES.HISTORY,
+                    component: () => import('@/pages/Dashboard/Conge/History.vue')
+                },
+                {
+                    ...DASHBOARD_ROUTES.MACHINES,
+                    component: () => import('@/pages/Dashboard/Admin/Employe.vue')
+                },
             ],
         },
     ],

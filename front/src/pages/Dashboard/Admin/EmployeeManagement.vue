@@ -44,7 +44,6 @@ const fetchEmployees = async () => {
 }
 
 function editEmployee(id: number) {
-  // Navigate to the employee edit page
   router.push(`/edit-employee/${id}`);
 }
 

@@ -7,5 +7,8 @@ export const DASHBOARD_ROUTES = {
   ADMIN_DASHBOARD: { name: 'AdminDashboard', path: '/AdminDashboard' },
   EMPLOYEE_MANAGEMENT: { name: 'Employeemanagemt', path: '/Employeemanagemt'},
   HESTORY: { name: 'History', path: '/History' },
+  HISTORY: { name: 'HistoryE', path: '/HistoryE' },
+  MACHINES: { name: 'Machines', path: '/Machines' },
+
 };
 

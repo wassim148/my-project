@@ -11,7 +11,7 @@ import {
 import { Button } from '@components/ui/button'
 
 defineProps<{
-    machine: {
+    User: {
         id: number
         name: string
     }
@@ -32,7 +32,7 @@ function copy(id: string) {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem @click="copy(machine.name)"> Copy name </DropdownMenuItem>
+            <DropdownMenuItem @click="copy(User.name)"> Copy name </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Delete</DropdownMenuItem>
             </DropdownMenuContent>

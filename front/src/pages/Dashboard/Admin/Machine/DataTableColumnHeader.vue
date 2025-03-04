@@ -10,10 +10,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@components/ui/dropdown-menu'
-import type { Machine } from './columns'
+import type { User } from './columns'
 
 interface DataTableColumnHeaderProps {
-    column: Column<Machine, any>
+    column: Column<User, any>
     title: string
 }
 

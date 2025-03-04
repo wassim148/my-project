@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { Machine } from '../columns'
+import { User } from '../columns'
 import Input from '@components/ui/input/Input.vue'
 import { Icon } from '@iconify/vue'
 import { TableSearchProps } from '@/shared/interfaces/table';
 
 
 
-const props = defineProps<TableSearchProps<Machine>>()
+const props = defineProps<TableSearchProps<User>>()
 </script>
 
 <template>

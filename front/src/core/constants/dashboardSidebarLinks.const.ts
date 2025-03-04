@@ -12,9 +12,9 @@ const sidebarNavigation: SideBarProps['config'] = [
             },
             {
                 type: 'button',
-                label: 'Tableau',
-                to: 'TableaudeSuivi',
-                icon: 'ph:table-duotone',
+                label: 'History',
+                to: 'HistoryE',
+                icon: 'ph:history-duotone'
             },
             {
                 type: 'button',
@@ -27,6 +27,12 @@ const sidebarNavigation: SideBarProps['config'] = [
                 label: 'Settings',
                 to: 'Settings',
                 icon: 'ph:gear-duotone',
+            },
+            {
+                type: 'button',
+                label: 'Tableau',
+                to: 'TableaudeSuivi',
+                icon: 'ph:table-duotone',
             },
             {
                 type: 'button',
@@ -45,6 +51,12 @@ const sidebarNavigation: SideBarProps['config'] = [
                 label: 'History',
                 to: 'History',
                 icon: 'ph:history-duotone'
+            },
+            {
+                type: 'button',
+                label: 'Machines',
+                to: 'Machines',
+                icon: 'ph:devices-duotone'
             },
         ],
     },

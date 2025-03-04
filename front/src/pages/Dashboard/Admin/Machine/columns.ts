@@ -3,15 +3,15 @@ import { h } from 'vue'
 import Checkbox from '../ui/checkbox/Checkbox.vue'
 import DropdownAction from './DropdownAction.vue'
 import DataTableColumnHeader from './DataTableColumnHeader.vue'
-// export type Machine = {
-//     id: number
-//     description: string
-//     name: string
-//     quantity: number
-//     price: number
-// }
+export type User = {
+    id: number
+    username: string
+    email: string
+    role: string
+    profission: string
+}
 
-export const columns: ColumnDef<Machine>[] = [
+export const columns: ColumnDef<User>[] = [
     {
         id: 'select',
         header: ({ table }) =>
@@ -39,50 +39,53 @@ export const columns: ColumnDef<Machine>[] = [
     //     },
     // },
     {
-        accessorKey: 'name',
-        header: ({ column }) => h(DataTableColumnHeader, { column, title: 'name' }),
+        accessorKey: 'username',
+        header: ({ column }) => h(DataTableColumnHeader, { column, title: 'username' }),
         cell: ({ row }) => {
             return h('div', { class: 'flex items-center space-x-2 font-medium' }, row.getValue('name'))
         },
     },
     {
-        accessorKey: 'description',
-        header: ({ column }) => h(DataTableColumnHeader, { column, title: 'description' }),
+        accessorKey: 'email',
+        header: ({ column }) => h(DataTableColumnHeader, { column, title: 'email' }),
         cell: ({ row }) => {
             return h('div', { class: 'flex items-center space-x-2 font-medium' }, row.getValue('description'))
         },
     },
     {
-        accessorKey: 'quantity',
-        header: ({ column }) => h(DataTableColumnHeader, { column, title: 'quantity' }),
+        accessorKey: 'role',
+        header: ({ column }) => h(DataTableColumnHeader, { column, title: 'role' }),
         cell: ({ row }) => {
             return h('div', { class: 'flex items-center space-x-2 font-medium' }, row.getValue('quantity'))
         },
     },
     {
-        accessorKey: 'price',
+        accessorKey: 'profission',
         header: ({ column }) => h(DataTableColumnHeader, { column, title: 'price' }),
         cell: ({ row }) => {
-            const price = Number.parseFloat(row.getValue('price'))
-            const formatted = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-            }).format(price)
+            return h('div', { class: 'flex items-center space-x-2 font-medium' }, row.getValue('price'))
+        }
+        // cell: ({ row }) => {
+        //     const price = Number.parseFloat(row.getValue('price'))
+        //     const formatted = new Intl.NumberFormat('en-US', {
+        //         style: 'currency',
+        //         currency: 'USD',
+        //     }).format(price)
 
-            return h('div', { class: 'flex items-center space-x-2 font-medium' }, formatted)
-        },
+        //     return h('div', { class: 'flex items-center space-x-2 font-medium' }, formatted)
+        // },
     },
     {
         id: 'actions',
         enableHiding: false,
         cell: ({ row }) => {
-            const machine = row.original
+            const User = row.original
 
             return h(
                 'div',
                 { class: 'relative' },
                 h(DropdownAction, {
-                    machine,
+                    User,
                 }),
             )
         },
