@@ -83,7 +83,7 @@ import { storeToRefs } from 'pinia';
 import { Conge } from '@/core/types/conge.type';
 
 const formSchema = {
-    numcin: (value: string) => !!value || 'Le numéro CIN est requis.',
+    numcin: (value: number) => !!value || 'Le numéro CIN est requis.',
     typeConge: (value: string) => !!value || 'Le type de congé est requis.',
     startDate: (value: Date) => !!value || 'La date de début est requise.',
     endDate: (value: Date) => !!value || 'La date de fin est requise.',

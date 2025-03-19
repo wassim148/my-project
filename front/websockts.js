@@ -8,7 +8,7 @@ export const state = reactive({
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = "http://localhost:3002";
+const URL = "http://localhost:3000";
 
 export let socket
 socket = socket ? socket : io(URL, {transports: ["websocket"]});

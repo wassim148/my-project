@@ -2,16 +2,39 @@ import { defineStore } from 'pinia';
 import { AxiosError } from 'axios';
 import { env, ROUTES } from '../constants';
 import axios from 'axios';
-import type { User } from '@/shared/interfaces/user';
 import { useCookies } from 'vue3-cookies';
 import { router } from '../routers';
 
-export interface UserStore {
-  user: User | null;
-  users: User[];
-  isAuthenticated: boolean;
-  token: string;
+// Define interfaces
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: 'employee' | 'manager' | 'admin';
+  numcin?: number; // Added if used in signup
+  profilePicture?: string; // Add if needed
 }
+
+export interface Project {
+  id: number;
+  name: string;
+  // Add other project fields
+}
+
+export interface Department {
+  id: number;
+  name: string;
+  // Add other department fields
+}
+
+// interface UserStoreState {
+//   user: User | null;
+//   users: User[];
+//   isAuthenticated: boolean;
+//   token: string;
+//   projects: Project[];
+//   departments: Department[];
+// }
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -19,123 +42,162 @@ export const useUserStore = defineStore('user', {
     users: [],
     isAuthenticated: !!useCookies().cookies.get(env.TOKEN_KEY.toString()),
     token: useCookies().cookies.get(env.TOKEN_KEY.toString()) || '',
+    projects: [],
+    departments: [],
   }),
 
   getters: {
-    username(): string {
-      return this.user?.username || '';
+    username(state): string {
+      return state.user?.username || '';
     },
-
-    isAdmin(): boolean {
-      return this.user?.role === 'admin' || false;
+    isAdmin(state): boolean {
+      return state.user?.role === 'admin';
     },
-
-    employeId(): number | null {
-      if (!this.token) {
-        throw new Error('No authentication token found');
-      }
-      return this.user?.id || null;
+    isManager(state): boolean {
+      return state.user?.role === 'manager';
+    },
+    isEmployee(state): boolean {
+      return state.user?.role === 'employee';
+    },
+    employeeId(state): number | null {
+      return state.user?.id || null;
     }
   },
 
   actions: {
-    async login(data: { email: string; password: string }) {
+    async login(credentials: { email: string; password: string }) {
       try {
-        const response = await axios.post<{ token: string; user: User }>(`${env.BACKEND_BASE_URL}/api/auth/login`, data);
+        const response = await axios.post<{ token: string; user: User }>(
+          `${env.BACKEND_BASE_URL}/api/auth/login`,
+          credentials
+        );
 
         const { cookies } = useCookies();
         cookies.set(env.TOKEN_KEY.toString(), response.data.token);
-        this.$patch({ user: response.data.user, isAuthenticated: true, token: response.data.token });
+        // cookies.set('role' ,response.data.user.role);
+        
+        this.$patch({
+          user: response.data.user,
+          isAuthenticated: true,
+          token: response.data.token
+        });
+        
         await router.push(ROUTES.MAIN);
       } catch (error) {
-        console.error('Erreur lors de la connexion:', (error as AxiosError).response?.data);
+        console.error('Login error:', (error as AxiosError).response?.data);
         throw error;
       }
     },
 
-    async signup(data: { username: string; email: string; password: string; role: string; numcin: number; profilePicture: File }) {
-      try {
-        const response = await axios.post<{ token: string; user: User }>(`${env.BACKEND_BASE_URL}/api/auth/signup`, data);
+    async signup(data: {
+      username: string;
+      email: string;
+      password: string;
+      role: string;
+      numcin: number;
+      profilePicture: File;
+    }) {
+      // try {
+      //   const formData = new FormData();
+      //   Object.entries(data).forEach(([key, value]) => {
+      //     formData.append(key, value);
+      //   });
+      //   console.log(formData);
+        console.log(data);
+
+        const response = await axios.post<{ token: string; user: User }>(
+          `${env.BACKEND_BASE_URL}/api/auth/signup`,
+          data
+          // { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
 
         const { cookies } = useCookies();
         cookies.set(env.TOKEN_KEY.toString(), response.data.token);
-        this.$patch({ user: response.data.user, isAuthenticated: true, token: response.data.token });
+        
+        this.$patch({
+          user: response.data.user,
+          isAuthenticated: true,
+          token: response.data.token
+        });
+        
         await router.push(ROUTES.MAIN);
+      // } catch (error) {
+      //   console.error('Signup error:', (error as AxiosError).response?.data);
+      //   throw error;
+      // }
+    },
+
+    async fetchUsers(p0: {}) {
+      try {
+        const response = await axios.get<User[]>(
+          `${env.BACKEND_BASE_URL}/api/users`,
+          { headers: { Authorization: `Bearer ${this.token}` } }
+        );
+        
+        this.users = response.data;
       } catch (error) {
-        console.error('Erreur lors de l\'inscription:', (error as AxiosError).response?.data);
+        console.error('Error fetching users:', (error as AxiosError).response?.data);
         throw error;
       }
     },
 
-    async forgetPassword(data: { email: string }) {
+    async deleteUser(userId: number) {
       try {
-        const response = await axios.post<{ message: string }>(`${env.BACKEND_BASE_URL}/api/auth/forget`, data);
-
-        console.log('Réponse de la demande de réinitialisation:', response.data);
-      } catch (error) {
-        console.error('Erreur lors de la demande de réinitialisation:', (error as AxiosError).response?.data);
-        throw error;
-      }
-    },
-
-    async resetPassword(data: { token: string; password: string }) {
-      try {
-        const response = await axios.post<{ message: string }>(`${env.BACKEND_BASE_URL}/api/auth/reset`, data);
-
-        console.log('Réponse de la réinitialisation:', response.data);
-      } catch (error) {
-        console.error('Erreur lors de la réinitialisation du mot de passe:', (error as AxiosError).response?.data);
-        throw error;
-      }
-    },
-
-    async fetchUsers() {
-      try {
-        const response = await axios.get<User[]>(`${env.BACKEND_BASE_URL}/api/users`);
-
+        await axios.delete(
+          `${env.BACKEND_BASE_URL}/api/users/${userId}`,
+          { headers: { Authorization: `Bearer ${this.token}` } }
+        );
+        
         this.$patch({
-          users: response.data,
+          users: this.users.filter(user => user.id !== userId),
+          user: this.user?.id === userId ? null : this.user
         });
       } catch (error) {
-        console.error('Erreur lors de la récupération des utilisateurs:', (error as AxiosError).response?.data);
+        console.error('Error deleting user:', (error as AxiosError).response?.data);
         throw error;
       }
     },
 
-    async fetchUser(id: number) {
+    async updateUser(userId: number, data: Partial<User>) {
       try {
-        const response = await axios.get<User>(`${env.BACKEND_BASE_URL}/api/users/${id}`);
-
-        this.$patch({
-          user: response.data,
-        });
+        const response = await axios.patch<User>(
+          `${env.BACKEND_BASE_URL}/api/users/${userId}`,
+          data,
+          { headers: { Authorization: `Bearer ${this.token}` } }
+        );
+        
+        this.user = response.data;
+        return response.data;
       } catch (error) {
-        console.error('Erreur lors de la récupération de l\'utilisateur:', (error as AxiosError).response?.data);
+        console.error('Update error:', (error as AxiosError).response?.data);
         throw error;
       }
     },
 
-    async updateUser(id: number, data: Partial<User>) {
+    async fetchDepartments() {
       try {
-        const response = await axios.put<User>(`${env.BACKEND_BASE_URL}/api/users/${id}`, data);
-
-        this.$patch({
-          user: response.data,
-        });
+        const response = await axios.get<Department[]>(
+          `${env.BACKEND_BASE_URL}/api/departments`,
+          { headers: { Authorization: `Bearer ${this.token}` } }
+        );
+        
+        this.departments = response.data;
       } catch (error) {
-        console.error('Erreur lors de la mise à jour de l\'utilisateur:', (error as AxiosError).response?.data);
+        console.error('Department fetch error:', error);
         throw error;
       }
     },
 
-    async deleteUser(id: number) {
+    async fetchProjects() {
       try {
-        await axios.delete(`${env.BACKEND_BASE_URL}/api/users/${id}`);
-        this.$patch({
-          user: null,
-        });
+        const response = await axios.get<Project[]>(
+          `${env.BACKEND_BASE_URL}/api/projects`,
+          { headers: { Authorization: `Bearer ${this.token}` } }
+        );
+        
+        this.projects = response.data;
       } catch (error) {
-        console.error('Erreur lors de la suppression de l\'utilisateur:', (error as AxiosError).response?.data);
+        console.error('Project fetch error:', error);
         throw error;
       }
     },
@@ -143,12 +205,50 @@ export const useUserStore = defineStore('user', {
     logout() {
       const { cookies } = useCookies();
       cookies.remove(env.TOKEN_KEY.toString());
-      this.$patch({ user: null, isAuthenticated: false, token: '' });
+      this.$reset();
       router.push(ROUTES.SIGN_IN);
-    }
+    },
+
+    async uploadProfilePicture(formData: FormData) {
+      try {
+        const response = await window.$axios.post(
+          `${env.BACKEND_BASE_URL}/api/users/upload-avatar`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" }
+          }
+        );
+    
+        // if (response.status !== 200) {
+        //   throw new Error('Upload failed');
+        // }
+    
+        // Update the user profile with the new avatar
+        this.user.avatar = response.data.avatarUrl;  // Assuming the backend returns the avatar URL
+        return response.data;  // Returning the response for further use if needed
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        throw new Error('Upload failed');
+      }
+    },
+    
+    // Update Profile Name
+    async updateProfile(data) {
+      try {
+        const response = await window.$axios.patch(`${env.BACKEND_BASE_URL}/api/users/upload-name/${this.user.id}`, data, {
+        });
+
+        if (response.status !== 200) throw new Error("Profile update failed");
+
+        // Update the user in the store
+        this.user.username = data.username;
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        throw error;
+      }
+    },
   },
   persist: true
 });
 
 export default useUserStore;
-

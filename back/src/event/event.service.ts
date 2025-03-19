@@ -12,17 +12,23 @@ export class CalendarEventService {
   ) {}
 
   async createEvent(createEventDto: CreateEventDto): Promise<Event> {
-    const { description, date, userId } = createEventDto;
+    const { description, startDate, endDate, userId, status } = createEventDto;
 
-    const parsedDate = new Date(date);
-    if (isNaN(parsedDate.getTime())) {
+    // Validate dates
+    if (
+      isNaN(new Date(startDate).getTime()) ||
+      isNaN(new Date(endDate).getTime())
+    ) {
       throw new Error('Invalid date format');
     }
 
+    // Create and save the event
     const event = this.eventRepository.create({
       description,
-      date: parsedDate,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
       user: { id: userId },
+      status: status || 'pending', // Default to "pending" if not provided
     });
 
     return this.eventRepository.save(event);
@@ -30,7 +36,10 @@ export class CalendarEventService {
 
   async getEventsByDate(date: string): Promise<Event[]> {
     const parsedDate = new Date(date);
-    return this.eventRepository.find({
+    if (isNaN(parsedDate.getTime())) {
+      throw new Error('Invalid date format');
+    }
+    const events = await this.eventRepository.find({
       where: {
         date: Between(
           new Date(parsedDate.setHours(0, 0, 0, 0)),
@@ -39,6 +48,7 @@ export class CalendarEventService {
       },
       relations: ['user'],
     });
+    return events || [];
   }
 
   async getEventsByMonth(year: number, month: number): Promise<Event[]> {
@@ -46,7 +56,6 @@ export class CalendarEventService {
     const endDate = new Date(year, month, 0);
     return this.eventRepository.find({
       where: { date: Between(startDate, endDate) },
-      relations: ['user'],
     });
   }
 
@@ -55,7 +64,6 @@ export class CalendarEventService {
     const endDate = this.getWeekEndDate(year, week);
     return this.eventRepository.find({
       where: { date: Between(startDate, endDate) },
-      relations: ['user'],
     });
   }
 
@@ -64,7 +72,7 @@ export class CalendarEventService {
       where: { id: eventId },
     });
     if (!event) throw new Error('Événement introuvable.');
-    event.starDate = new Date();
+    event.startDate = new Date();
     return this.eventRepository.save(event);
   }
 
@@ -73,7 +81,7 @@ export class CalendarEventService {
       where: { id: eventId },
     });
     if (!event) throw new Error('Événement introuvable.');
-    if (!event.starDate)
+    if (!event.startDate)
       throw new Error("Veuillez effectuer un check-in d'abord.");
     event.endDate = new Date();
     return this.eventRepository.save(event);

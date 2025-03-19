@@ -29,9 +29,10 @@ export class HistoryService {
 
     leaves.forEach((leave) => {
       if (leave.user) {
-        const dept = leave.user.profession || 'Unknown';
+        const dept = leave.user.department || 'Unknown';
         stats.byEmployee[leave.user.username] =
           (stats.byEmployee[leave.user.username] || 0) + 1;
+        console.log(dept);
         stats.byDepartment[dept] = (stats.byDepartment[dept] || 0) + 1;
       }
     });

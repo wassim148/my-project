@@ -25,6 +25,7 @@ export class WebsocketGateway
 
   afterInit(server: Server) {
     console.log('WebSocket server initialized');
+    this.server.emit('init');
   }
 
   handleConnection(client: Socket) {

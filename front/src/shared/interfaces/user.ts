@@ -2,7 +2,8 @@ export interface User {
   id: number
   username: string
   email: string
-  role: 'employe' | 'admin'
+  role: 'employee' | 'manager' | 'admin';
+  department: string
   password: string
   numcin: number
   profilePicture: string

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type HTMLAttributes, computed } from 'vue'
+import { type HTMLAttributes, computed, defineProps } from 'vue'
 import { Separator, type SeparatorProps } from 'radix-vue'
 import { cn } from '@/shared/lib/utils'
 

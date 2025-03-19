@@ -13,17 +13,17 @@ import { MailerModule } from '@nestjs-modules/mailer';
       useFactory: async (configService: ConfigService) => {
         return {
           transport: {
-            host: configService.get('MAIL_HOST'),
-            port: configService.get('MAIL_PORT'),
-            secure: configService.get('MAIL_SECURE'),
+            host: configService.get('MAILER_HOST'),
+            port: configService.get('MAILER_PORT'),
+            secure: false,
             ignoreTLS: true,
             auth: {
-              user: configService.get('MAIL_USER'),
-              pass: configService.get('MAIL_PASSWORD'),
+              user: configService.get('MAILER_USERNAME'),
+              pass: configService.get('MAILER_PASSWORD'),
             },
           },
           defaults: {
-            from: configService.get('MAIL_FROM'),
+            from: configService.get('MAILER_FROM'),
           },
         };
       },

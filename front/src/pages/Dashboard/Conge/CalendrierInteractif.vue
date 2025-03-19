@@ -1,11 +1,9 @@
 <template>
   <div class="p-6 rounded-lg shadow-md bg-white max-w-4xl mx-auto">
     <h2 class="text-2xl font-bold mb-4">Tableau de bord interactif</h2>
-
     <div class="mb-4">
       <FullCalendar :options="calendarOptions" />
     </div>
-
     <div class="mt-4">
       <ul>
         <li v-for="(event, index) in calendarEventStore.events" :key="index"
@@ -27,7 +25,6 @@
         Aucun événement pour cette date.
       </p>
     </div>
-
     <div class="mt-6">
       <h3 class="text-lg font-semibold mb-2">Jours fériés locaux et internationaux</h3>
       <ul>
@@ -39,7 +36,6 @@
         Aucun jour férié enregistré pour cette période.
       </p>
     </div>
-
     <div class="mt-6">
       <h3 class="text-lg font-semibold mb-2">Périodes de restriction</h3>
       <ul>
@@ -80,9 +76,7 @@ const calendarOptions = reactive({
   selectable: true,
   select: async (info) => {
     calendarEventStore.selectedDate = new Date(info.startStr);
-
     await calendarEventStore.loadEvents(calendarEventStore.selectedDate);
-
     if (!calendarEventStore.events.length) {
       try {
         await calendarEventStore.createAbsence(
@@ -93,7 +87,6 @@ const calendarOptions = reactive({
         console.error('Erreur lors de la création de l\'absence :', error);
       }
     }
-
     updateCalendarEvents();
   },
   eventContent: (arg) => {
@@ -114,7 +107,7 @@ const updateCalendarEvents = () => {
     title: event.description,
     start: event.dateDebut,
     end: event.dateFin,
-    color: event.status === 'approved' ? '#28a745' : '#ffc107',
+    color: event.status === 'approved' ? '#28a745' : event.status === 'pending' ? '#dc3545' : '#ffc107', // Red for pending/absence
   }));
 };
 
@@ -133,5 +126,3 @@ const loadEvents = () => {
   updateCalendarEvents();
 };
 </script>
-
-<style scoped></style>

@@ -11,11 +11,16 @@ import { WebsocketsModule } from './webSockets/websockets.module';
 import { JwtStrategy } from './auth/strategy/jwt.strategy';
 import { CongéeModule } from './congée/congée.module';
 import { NotificationModule } from './notification/notification.module';
-import { PointageModule } from './pointage/pointage.module';
 import { EventModule } from './event/event.module';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
 import { FileModule } from './file/file.module';
 import { HistoryModule } from './history/history.module';
+// import { AlertsService } from './alerts/alerts.service';
+// import { AlertsScheduler } from './alerts/alerts.scheduler';
+// import { ScheduleModule } from '@nestjs/schedule';
+// import { APP_SCHEDULER } from '@nestjs/schedule';
+import { DepartementModule } from './departement/departement.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -41,13 +46,24 @@ import { HistoryModule } from './history/history.module';
     WebsocketsModule,
     CongéeModule,
     NotificationModule,
-    PointageModule,
     EventModule,
     LeaveRequestModule,
     FileModule,
     HistoryModule,
+    DepartementModule,
+    ProjectModule,
+    // ScheduleModule.forRoot('standal'),
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy, WebsocketsModule],
+  providers: [
+    AppService,
+    JwtStrategy,
+    WebsocketsModule,
+    // AlertsService,
+    // {
+    //   provide: APP_SCHEDULER,
+    //   useClass: AlertsScheduler,
+    // },
+  ],
 })
 export class AppModule {}

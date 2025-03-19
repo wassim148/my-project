@@ -31,7 +31,7 @@ export const useHistoryStore = defineStore('history', {
           },
           async fetchStatistics() {
             try {
-              const response = await window.$axios.get(`${env.BACKEND_BASE_URL}/api//history/statistics`);
+              const response = await window.$axios.get(`${env.BACKEND_BASE_URL}/api/history/statistics`);
               this.$patch({statistics : response});
             } catch (error) {
               console.error('Erreur lors de la récupération des statistiques', error);

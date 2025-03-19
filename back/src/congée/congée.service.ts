@@ -1,7 +1,5 @@
 import {
   forwardRef,
-  HttpException,
-  HttpStatus,
   Inject,
   Injectable,
   NotFoundException,
@@ -32,113 +30,61 @@ export class CongesService {
     const start = new Date(startDate);
     const end = new Date(endDate);
     const timeDifference = end.getTime() - start.getTime();
-    return Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1; // Inclusif
+    return Math.ceil(timeDifference / (1000 * 3600 * 24)) + 1;
   }
-
-  // async creerConge(
-  //   createCongeDto: CreateCongéeDto,
-  //   id: number,
-  //   user: string,
-  // ): Promise<Conge> {
-  //   try {
-  //     const conge = this.congeRepository.create({
-  //       ...createCongeDto,
-  //       employeId: id,
-  //       username: user,
-  //       nombreJours: this.calculateDaysBetweenDates(
-  //         createCongeDto.startDate,
-  //         createCongeDto.endDate,
-  //       ),
-  //     });
-  //     console.log(conge);
-  //     if (!conge) {
-  //       throw new NotFoundException(`Leave with id ${id} not found`);
-  //     }
-  //     if (conge.typeConge === 'annual' || conge.typeConge === 'Sans solde') {
-  //       if (status === 'accepted') {
-  //         if (conge.nombreJours > conge.employe.leaveBalance) {
-  //           throw new Error('Insufficient leave balance for this request');
-  //         }
-  //         conge.employe.leaveBalance -= conge.nombreJours;
-  //         await this.userRepository.save(conge.employe);
-  //       }
-  //     }
-  //     const event = await this.calendarEventService.createEvent({
-  //       description: `Congé ${conge.typeConge} du ${conge.startDate} au ${conge.endDate}`,
-  //       startDate: conge.startDate,
-  //       endDate: conge.endDate,
-  //       userId: conge.employeId,
-  //       date: conge.nombreJours,
-  //     });
-  //     const savedConge = await this.congeRepository.save(conge);
-  //     this.websocketGateway.server.emit('conge_created', savedConge);
-  //     return savedConge;
-  //   } catch (error) {
-  //     console.error(error);
-  //     throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-  //   }
-  // }
-
   async creerConge(
     createCongeDto: CreateCongéeDto,
     id: number,
     user: string,
   ): Promise<Conge> {
-    try {
-      const employe = await this.userRepository.findOne({ where: { id } });
-      if (!employe) {
-        throw new NotFoundException(`User with id ${id} not found`);
-      }
-
-      const conge = this.congeRepository.create({
-        ...createCongeDto,
-        employeId: id,
-        username: user,
-        nombreJours: this.calculateDaysBetweenDates(
-          createCongeDto.startDate,
-          createCongeDto.endDate,
-        ),
-      });
-
-      if (
-        createCongeDto.typeConge === 'annual' ||
-        createCongeDto.typeConge === 'Sans solde'
-      ) {
-        if (conge.nombreJours > employe.leaveBalance) {
-          throw new Error('Insufficient leave balance for this request');
-        }
-      }
-
-      const event = await this.calendarEventService.createEvent({
-        description: `Congé ${createCongeDto.typeConge} du ${createCongeDto.startDate} au ${createCongeDto.endDate}`,
-        startDate: createCongeDto.startDate,
-        endDate: createCongeDto.endDate,
-        userId: id,
-        date: conge.nombreJours,
-      });
-      if (event) {
-        this.websocketGateway.server.emit('event_created', event);
-      }
-      const savedConge = await this.congeRepository.save(conge);
-      if (savedConge.status === 'accepted') {
-        employe.leaveBalance -= conge.nombreJours;
-        await this.userRepository.save(employe);
-      }
-
-      return savedConge;
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    const employe = await this.userRepository.findOne({ where: { id } });
+    if (!employe) {
+      throw new NotFoundException(`User with id ${id} not found`);
     }
+    const conge = this.congeRepository.create({
+      ...createCongeDto,
+      employeId: id,
+      username: user,
+      nombreJours: this.calculateDaysBetweenDates(
+        createCongeDto.startDate,
+        createCongeDto.endDate,
+      ),
+    });
+    if (conge.typeConge === 'annual' || conge.typeConge === 'maladie') {
+      if (conge.nombreJours > employe.leaveBalance) {
+        throw new Error('Insufficient leave balance for this request');
+      }
+      employe.leaveBalance -= conge.nombreJours;
+      console.log(employe);
+      await this.userRepository.save(employe);
+    }
+    const event = await this.calendarEventService.createEvent({
+      description: `Congé ${createCongeDto.typeConge} du ${createCongeDto.startDate} au ${createCongeDto.endDate}`,
+      startDate: createCongeDto.startDate,
+      endDate: createCongeDto.endDate,
+      userId: id,
+      date: conge.nombreJours,
+      status: 'pending',
+    });
+    if (event) {
+      this.websocketGateway.server.emit('event_created', event);
+    }
+    const savedConge = await this.congeRepository.save(conge);
+    if (savedConge.status === 'accepted') {
+      const message = `Votre congé du ${savedConge.startDate} au ${savedConge.endDate} a été accepté.`;
+      await this.notificationsService.createNotification(
+        savedConge.employeId,
+        message,
+      );
+    }
+    return savedConge;
   }
 
   async getConge(id: number): Promise<Conge> {
-    this.websocketGateway.server.emit('conge_updated', id);
     return this.congeRepository.findOne({ where: { id } });
   }
 
   async getConges(typeConge: string): Promise<Conge> {
-    this.websocketGateway.server.emit('conge_updated', typeConge);
     return this.congeRepository.findOne({
       where: { typeConge },
     });
@@ -149,8 +95,15 @@ export class CongesService {
       where: { id },
       relations: ['employe'],
     });
+
+    if (status === 'refused') {
+      conge.employe.leaveBalance += conge.nombreJours;
+      await this.userRepository.save(conge.employe);
+    }
+
     conge.status = status;
     const savedConge = await this.congeRepository.save(conge);
+
     const message = `Votre demande de congé du ${conge.startDate} au ${conge.endDate} a été ${status} par l'administration.`;
     await this.notificationsService.createNotification(
       conge.employeId,
@@ -163,7 +116,6 @@ export class CongesService {
 
   async getTousLesConges(id: number): Promise<Conge[]> {
     const conges = await this.congeRepository.findBy({ employeId: id });
-    this.websocketGateway.server.emit('conges_updated', conges);
     return conges;
   }
 
@@ -194,5 +146,35 @@ export class CongesService {
     return this.congeRepository.find({
       order: { startDate: 'DESC' },
     });
+  }
+
+  async updateLeave(
+    id: number,
+    body: { startDate: Date; endDate: Date },
+  ): Promise<Conge> {
+    const conge = await this.congeRepository.findOneBy({ id });
+
+    if (!conge) {
+      throw new NotFoundException('Congé non trouvé');
+    }
+
+    conge.startDate = body.startDate;
+    conge.endDate = body.endDate;
+    await this.congeRepository.save(conge);
+    if (conge.status === 'accepted' || conge.status === 'refused') {
+      this.updateStatus(id, 'waiting');
+    }
+    return conge;
+  }
+
+  async annulé(id: number) {
+    const conge = await this.congeRepository.findOneBy({ id });
+    if (!conge) throw new NotFoundException('Congé non trouvé');
+
+    conge.employe.leaveBalance += conge.nombreJours;
+    await this.userRepository.save(conge.employe);
+
+    await this.congeRepository.delete(id);
+    this.websocketGateway.server.emit('conge_deleted', id);
   }
 }

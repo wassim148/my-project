@@ -16,7 +16,7 @@ export class Conge {
   @Column()
   username: string;
 
-  @Column()
+  @Column({ nullable: false })
   employeId: number;
 
   @Column()

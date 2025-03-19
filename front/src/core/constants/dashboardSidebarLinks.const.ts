@@ -7,7 +7,7 @@ const sidebarNavigation: SideBarProps['config'] = [
             {
                 type: 'button',
                 label: 'demands ',
-                to: 'DemandesDeConge',
+                to: 'Demandes',
                 icon: 'ph:file-text-bold',
             },
             {
@@ -19,7 +19,7 @@ const sidebarNavigation: SideBarProps['config'] = [
             {
                 type: 'button',
                 label: 'Calendrier',
-                to: 'CalendrierInteractif',
+                to: 'Calendrier',
                 icon: 'ph:calendar-duotone',
             },
             {
@@ -31,7 +31,7 @@ const sidebarNavigation: SideBarProps['config'] = [
             {
                 type: 'button',
                 label: 'Tableau',
-                to: 'TableaudeSuivi',
+                to: 'Tableau',
                 icon: 'ph:table-duotone',
             },
             {
@@ -42,21 +42,15 @@ const sidebarNavigation: SideBarProps['config'] = [
             },
             {
                 type: 'button',
-                label: 'Employe',
-                to: 'Employeemanagemt',
-                icon: 'ph:user'
-            },
-            {
-                type: 'button',
                 label: 'History',
                 to: 'History',
                 icon: 'ph:history-duotone'
             },
             {
                 type: 'button',
-                label: 'Machines',
-                to: 'Machines',
-                icon: 'ph:devices-duotone'
+                label: 'Employe',
+                to: 'Employe',
+                icon: 'ph:user'
             },
         ],
     },

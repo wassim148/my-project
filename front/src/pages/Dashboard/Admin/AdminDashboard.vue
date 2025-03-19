@@ -9,8 +9,9 @@
           <thead class="bg-gray-100">
             <tr>
               <th class="p-2 text-left">Employé</th>
-              <th class="p-2 text-left">Type</th>
+              <th class="p-2 text-left">Type de conge</th>
               <th class="p-2 text-left">Période</th>
+              <!-- <th class="p-2 text-left">Durée</th> -->
               <th class="p-2 text-left">Status</th>
               <th class="p-2 text-left">Actions</th>
             </tr>
@@ -22,6 +23,7 @@
             <td class="p-2">
               {{ formatDate(request.startDate) }} - {{ formatDate(request.endDate) }}
             </td>
+            <!-- <td class="p-2">{{ request.nombreJours }} jour(s)</td> -->
             <td class="p-2">
               <span
                 :class="{

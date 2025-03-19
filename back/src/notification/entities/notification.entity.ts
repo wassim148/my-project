@@ -5,11 +5,17 @@ export class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  employeId: number;
+
   @ManyToOne(() => User, (user) => user.notifications)
-  user: User;
+  employe: User;
 
   @Column()
   message: string;
+
+  @Column({ nullable: true })
+  type: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;

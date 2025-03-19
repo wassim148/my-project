@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { Pointage } from 'src/pointage/entities/pointage.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Conge } from 'src/congée/entities/congée.entity';
 import { Notification } from 'src/notification/entities/notification.entity';
@@ -7,6 +6,9 @@ import { Role } from 'src/auth/enums/role.enum';
 import { Event } from 'src/event/entities/event.entity';
 import { LeaveRequest } from 'src/leave-request/entities/leave-request.entity';
 import { File } from 'src/file/entities/file.entity';
+import { Absence } from './absence.entity';
+// import { Departement } from 'src/departement/entities/departement.entity';
+// import { Project } from 'src/project/entities/project.entity';
 
 @Entity()
 export class User {
@@ -17,7 +19,7 @@ export class User {
     nullable: true,
     name: 'graphic',
   })
-  graphic: Buffer;
+  avatar: string;
 
   @Column()
   username: string;
@@ -40,6 +42,9 @@ export class User {
   @Column({ default: false, select: false })
   userVerified: boolean;
 
+  @Column({ default: false })
+  isKeyEmployee: boolean;
+
   @Column()
   token: string;
 
@@ -53,18 +58,24 @@ export class User {
   isAvailable: boolean;
 
   @Column({ nullable: true })
-  profession: string;
+  department: string;
+
+  @Column({ nullable: true })
+  projects: string;
+
+  // @ManyToOne(() => Departement, (departement) => departement.employees)
+  // departement: Departement[];
+
+  // @ManyToOne(() => Project, (projrcts) => projrcts.employees)
+  // projrcts: Project[];
 
   @Column({ default: 45 })
   leaveBalance: number;
 
-  @OneToMany(() => Notification, (notifications) => notifications.user, {
+  @OneToMany(() => Notification, (notifications) => notifications.employe, {
     eager: true,
   })
   notifications: Notification[];
-
-  @OneToMany(() => Pointage, (pointage) => pointage.user)
-  pointages: Pointage[];
 
   @OneToMany(() => Conge, (conge) => conge.user)
   conges: Conge[];
@@ -77,4 +88,7 @@ export class User {
 
   @OneToMany(() => File, (file) => file.user)
   files: File;
+
+  @OneToMany(() => Absence, (absence) => absence.user, { eager: true })
+  absences: Absence[];
 }

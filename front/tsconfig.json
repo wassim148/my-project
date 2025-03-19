@@ -19,6 +19,7 @@
       "./src/core/types"
     ],
     "paths": {
+      "v-calendar": ["node_modules/v-calendar/dist/v-calendar.umd.min.js"],
       "@/*": [
         "src/*"
       ],

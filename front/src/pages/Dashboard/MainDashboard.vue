@@ -29,7 +29,8 @@ const userDropdownMenue = useUserDropdownMenue(
     },
 );
 
-const notifications = computed<NotificationSideBarProps['notification']>(() => {
+const notifications = computed<NotificationSideBarProps['notification']>(async () => {
+    await notificationStore.fetchNotifications();
     return notificationStore.notifications?.map((notif) => ({
         message: notif.message,
         time: notif.timeAgo,

@@ -45,13 +45,11 @@ export class AuthService {
       numcin: signupData.numcin,
       email: signupData.email,
       password: hashedPassword,
-      profession: signupData.profession,
+      department: signupData.department,
       role: Role[signupData.role],
       token: await this.jwtService.sign(
         { username: signupData.username, email: signupData.email },
-        {
-          expiresIn: '1m',
-        },
+        { expiresIn: '1m' },
       ),
     });
 
@@ -110,7 +108,12 @@ export class AuthService {
     }
     delete user.password;
     const token = await this.getToken(user.id, user.email);
-    return { user, token: token.access_token };
+    return {
+      user,
+      token: token.access_token,
+      refresh_token: token.refresh_token,
+      role: user.role,
+    };
   }
 
   async verifyEmail(token: string, email: string) {

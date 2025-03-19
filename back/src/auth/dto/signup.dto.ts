@@ -23,7 +23,7 @@ export class SignupDto {
 
   @IsNotEmpty()
   @IsString()
-  profession: string;
+  department: string;
 
   photo?: string;
 }

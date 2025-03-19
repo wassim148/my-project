@@ -8,7 +8,9 @@ import {
   Query,
   Req,
   Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthenticationDto } from './dto/authentication.dto';
@@ -24,17 +26,41 @@ import {
   ApiBadRequestResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { v4 as uuidv4 } from 'uuid';
+import { FileService } from 'src/file/file.service';
 
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private readonly fileService: FileService,
+  ) {}
 
   @Post('signup')
+  @UseInterceptors(FileInterceptor('file'))
   @ApiCreatedResponse({ description: 'Sign Up' })
   @ApiBadRequestResponse({ description: 'can not sign up, please try again' })
-  async signUp(@Body() signupdata: SignupDto): Promise<Tokens> {
+  async signUp(
+    @Body() signupdata: SignupDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<Tokens> {
     console.log(signupdata);
+    if (file) {
+      try {
+        const fileName = `${uuidv4()}-${file.originalname}`;
+        const fileUrl = await this.fileService.uploadFile(
+          'photo',
+          fileName,
+          file.buffer,
+        );
+
+        signupdata.photo = fileUrl;
+      } catch (error) {
+        throw new Error('Failed to upload file to MinIO');
+      }
+    }
 
     return this.authService.signup(signupdata);
   }

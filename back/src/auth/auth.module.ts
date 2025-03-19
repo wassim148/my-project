@@ -9,6 +9,8 @@ import { AccessTokenStrategy } from './strategy/access-token.strategy';
 import { MailModule } from 'src/mail/mailer.module';
 import { UsersModule } from 'src/users/users.module';
 import { RefreshJwtStrategy } from './strategy/refresh-token.strategy';
+import { FileService } from 'src/file/file.service';
+import { MinioConfigService } from 'ninio.config';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { RefreshJwtStrategy } from './strategy/refresh-token.strategy';
     JwtStrategy,
     AccessTokenStrategy,
     RefreshJwtStrategy,
+    FileService,
+    MinioConfigService,
   ],
   exports: [AuthService],
 })

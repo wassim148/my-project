@@ -5,10 +5,12 @@ import { createPersistedState } from 'pinia-plugin-persistedstate'
 import App from './App.vue'
 import { axiosHelper } from './core/helpers'
 import { parse, stringify } from 'zipson/lib'
+import { env } from './core/constants'
+import axios from 'axios'
+// import 'v-calendar/dist/style.css';
 
 
 function initApp(App: any) {
-    // create helper
     const pinia = createPinia()
     pinia.use(createPersistedState({
         serializer: {
@@ -17,9 +19,15 @@ function initApp(App: any) {
         },
     }),
 )
+
+window.$axios = axios.create({
+    baseURL: env.BACKEND_BASE_URL,
+    timeout: 10000,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
     const app = createApp(App)
 
-    // inject helper
     app.use(router)
     app.use(pinia)
     app.use(axiosHelper)

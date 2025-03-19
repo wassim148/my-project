@@ -1,53 +1,64 @@
 <script lang="ts" setup>
-import UserDropdownBtn, {
-    type UserDropdownBtnProps,
-} from '@/shared/components/SideBar/UserDropdownBtn/UserDropdownBtn.vue'
-import NavigationBtn, { type NavigationBtnProps } from '@/shared/components/SideBar/NavigationBtn/NavigationBtn.vue'
+import UserDropdownBtn from '@/shared/components/SideBar/UserDropdownBtn/UserDropdownBtn.vue'
+import NavigationBtn from '@/shared/components/SideBar/NavigationBtn/NavigationBtn.vue'
 import BrowsingUtilsTab from '@/shared/components/SideBar/BrowsingUtilsTab/BrowsingUtilsTab.vue'
-import NavigationDropDownBtn, {
-    type NavigationDropDownBtnProps,
-} from '@/shared/components/SideBar/NavigationDropDownBtn/NavigationDropDownBtn.vue'
-import { cn } from '@/shared/lib/utils'
+import NavigationDropDownBtn from '@/shared/components/SideBar/NavigationDropDownBtn/NavigationDropDownBtn.vue'
+import { defineProps } from 'vue'
 
-type NavigationConfig = {
-    title: string
-    navigations: (({ type: 'dropdown' } & NavigationDropDownBtnProps) | ({ type: 'button' } & NavigationBtnProps))[]
-}[]
-
-export interface SideBarProps {
-    userDropdownMenue: UserDropdownBtnProps
-    isSidebarCollapsed: boolean
-    config: NavigationConfig
+export interface NavigationConfig {
+    title: string;
+    navigations: (
+        | { type: 'dropdown'; label: string; links: { to: string; label: string }[] }
+        | { type: 'button'; to: string; label: string; icon?: string }
+    )[];
 }
 
-const props = defineProps<SideBarProps>()
+export interface SideBarProps {
+    isSidebarCollapsed: boolean;
+    userDropdownMenue: {
+        menue: { label: string; action: () => void }[];
+        user: { username: string; avatar: string };
+    };
+    config: NavigationConfig[];
+}
+
+const props = defineProps<SideBarProps>();
 </script>
+
 <template>
     <Transition name="left-sidebar">
         <div
             v-if="!props.isSidebarCollapsed"
-            :class="
-                cn(
-                    'md:fixed z-10 flex flex-col h-full w-full max-w-56 md:px-5 px-3 py-4 space-y-8 items-start border-r font-sans font-normal ease-in-out',
-                )
-            "
+            class="fixed z-10 left-0 flex flex-col space-y-6 p-5 w-[13.5rem] h-full border-r bg-white shadow-lg"
         >
-            <UserDropdownBtn :menue="props.userDropdownMenue.menue" :user="props.userDropdownMenue.user" />
-            <BrowsingUtilsTab ></BrowsingUtilsTab>
-            <div class="flex flex-col font-sans w-full">
-                <template v-for="nav in props.config">
+            <!-- User Dropdown -->
+            <UserDropdownBtn 
+                :menue="props.userDropdownMenue.menue" 
+                :user="props.userDropdownMenue.user" 
+            />
+
+            <!-- Browsing Utilities -->
+            <BrowsingUtilsTab />
+
+            <!-- Navigation Section -->
+            <div class="flex flex-col w-full">
+                <template v-for="(nav, navIndex) in props.config" :key="navIndex">
                     <div class="hidden md:block py-3 px-1">
                         <h2 class="text-muted-foreground">{{ nav.title }}</h2>
                     </div>
-                    <nav class="flex flex-col space-y-1 w-full font-sans font-normal text-sm">
-                        <template v-for="link in nav.navigations">
+                    <nav class="flex flex-col space-y-1 w-full text-sm">
+                        <template v-for="(link, linkIndex) in nav.navigations" :key="linkIndex">
                             <NavigationBtn
-                                v-if="link.type == 'button'"
+                                v-if="link.type === 'button'"
                                 :to="link.to"
                                 :label="link.label"
                                 :icon="link.icon"
-                            ></NavigationBtn>
-                            <NavigationDropDownBtn v-else :label="link.label" :links="link.links" />
+                            />
+                            <NavigationDropDownBtn 
+                                v-else 
+                                :label="link.label" 
+                                :links="link.links" 
+                            />
                         </template>
                     </nav>
                 </template>
@@ -56,16 +67,15 @@ const props = defineProps<SideBarProps>()
     </Transition>
 </template>
 
-<style>
-/* we will explain what these classes do next! */
+<style scoped>
+/* Sidebar transition animations */
 .left-sidebar-enter-active,
 .left-sidebar-leave-active {
-    transition: all 0.1s ease-out;
+    transition: transform 0.3s ease-out;
 }
 
 .left-sidebar-enter-from,
 .left-sidebar-leave-to {
-    width: 0px;
-    @apply -translate-x-56;
+    transform: translateX(-100%);
 }
 </style>

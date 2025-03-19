@@ -63,9 +63,9 @@
                 <option value="Employee">Employee</option>
               </select>
             </div>
-            <FormField name="profession" v-slot="{ field, errorMessage }">
+            <FormField name="department" v-slot="{ field, errorMessage }">
               <FormItem>
-                <FormLabel>Profession</FormLabel>
+                <FormLabel>department</FormLabel>
                 <FormControl>
                   <Input type="text" placeholder="Software Engineer" v-bind="field" />
                 </FormControl>
@@ -125,7 +125,7 @@ const formSchema = toTypedSchema(
     password: z.string()
       .min(8, { message: 'Password is too short' })
       .max(20, { message: 'Password is too long' }),
-    profession: z.string().min(3, { message: 'Profession must be at least 3 characters.' }),
+    department: z.string().min(3, { message: 'department must be at least 3 characters.' }),
     numcin: z.number().min(8, { message: 'CIN must be at least 8 digits.' }),
     profilePicture: z.any().nullable(),
   }),

@@ -19,11 +19,7 @@ export class CalendarEventController {
 
   @Post('/absence')
   async createEvent(@Body() createEventDto: CreateEventDto): Promise<Event> {
-    try {
-      return await this.calendarEventService.createEvent(createEventDto);
-    } catch (error) {
-      throw new Error('Failed to create event');
-    }
+    return this.calendarEventService.createEvent(createEventDto);
   }
 
   @Get('date/:date')
