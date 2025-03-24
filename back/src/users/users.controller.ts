@@ -4,15 +4,17 @@ import {
   Get,
   HttpStatus,
   Post,
-  Req,
-  Res,
-  UseGuards,
   Put,
   Delete,
   Param,
+  Req,
+  Res,
+  UseGuards,
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -26,22 +28,26 @@ import { ChangePasswordDto } from 'src/auth/dto/changepassword.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from 'src/auth/enums/role.enum';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
+import { FileService } from 'src/file/file.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @UseGuards(JwtAuthGuard)
 @Roles([Role.User])
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly fileService: FileService,
+  ) {}
 
   @Get()
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  @Get('/me/:id')
-  async findOne(@Req() req): Promise<User> {
-    const id = req.user.id;
+  @Get('profile/:id')
+  async findOne(@Param('id') id: number): Promise<User> {
     return this.usersService.findOne(id);
   }
 
@@ -98,8 +104,7 @@ export class UsersController {
       storage: diskStorage({
         destination: './uploads/avatars',
         filename: (req, file, callback) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
           const fileExt = extname(file.originalname);
           callback(null, `avatar-${uniqueSuffix}${fileExt}`);
         },
@@ -113,15 +118,28 @@ export class UsersController {
         }
         callback(null, true);
       },
+      limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
   async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Req() req) {
+    if (!req.user) throw new UnauthorizedException('User not authenticated');
     if (!file) throw new BadRequestException('File is required');
 
-    const avatarUrl = `/uploads/avatars/${file.filename}`;
-    await this.usersService.updateUserAvatar(req.user.id, avatarUrl);
+    try {
+      const fileName = `${uuidv4()}-${file.originalname}`;
+      const avatarUrl = await this.fileService.uploadFile(
+        'conges',
+        fileName,
+        file.buffer,
+      );
+      await this.usersService.updateUserAvatar(req.user.id, avatarUrl);
+      console.log(`User ${req.user.id} uploaded avatar: ${avatarUrl}`);
 
-    return { avatarUrl };
+      return { avatarUrl };
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      throw new InternalServerErrorException('Failed to upload avatar');
+    }
   }
 
   // Update Username

@@ -9,7 +9,7 @@ import { NotificationModule } from 'src/notification/notification.module';
 import { User } from 'src/users/entities/user.entities';
 import { EventModule } from 'src/event/event.module';
 import { FileService } from 'src/file/file.service';
-import { MinioConfigService } from 'ninio.config';
+import { MinioConfigService } from 'minio.config';
 
 @Module({
   imports: [

@@ -10,7 +10,7 @@ import { MailModule } from 'src/mail/mailer.module';
 import { UsersModule } from 'src/users/users.module';
 import { RefreshJwtStrategy } from './strategy/refresh-token.strategy';
 import { FileService } from 'src/file/file.service';
-import { MinioConfigService } from 'ninio.config';
+import { MinioConfigService } from 'minio.config';
 
 @Module({
   imports: [
